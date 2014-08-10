@@ -43,6 +43,7 @@ import random
 import json
 import re
 import unicodedata
+import codecs
 
 
 USER_AGENT = u'alfred-workflow-0.1'
@@ -150,11 +151,11 @@ class Response(object):
         self.url = None
         self.raw = None
         self.encoding = None
-        self.content = None
         self.error = None
         self.status_code = None
         self.reason = None
         self.headers = {}
+        self._content = None
 
         # Execute query
         try:
@@ -171,7 +172,6 @@ class Response(object):
         else:
             self.status_code = self.raw.getcode()
             self.url = self.raw.geturl()
-            self.content = self.raw.read()
         self.reason = RESPONSES.get(self.status_code)
 
         # Parse additional info if request succeeded
@@ -194,6 +194,19 @@ class Response(object):
         return json.loads(self.content, self.encoding or 'utf-8')
 
     @property
+    def content(self):
+        """Return raw content of response (i.e. bytes)
+
+        :returns: ``str``
+
+        """
+
+        if not self._content:
+            self._content = self.raw.read()
+
+        return self._content
+
+    @property
     def text(self):
         """Return unicode-decoded content of response.
 
@@ -205,6 +218,43 @@ class Response(object):
             return unicodedata.normalize('NFC', unicode(self.content,
                                                         self.encoding))
         return self.content
+
+    def iter_content(self, chunk_size=1, decode_unicode=False):
+        """Iterate over response data.
+
+        :param chunk_size: Number of bytes to read into memory
+        :type chunk_size: ``int``
+        :param decode_unicode: Decode to Unicode using detected encoding
+        :type decode_unicode: ``Boolean``
+        :returns: iterator
+
+        """
+
+        def decode_stream(iterator, r):
+
+            decoder = codecs.getincrementaldecoder(r.encoding)(errors='replace')
+
+            for chunk in iterator:
+                rv = decoder.decode(chunk)
+                if rv:
+                    yield rv
+            rv = decoder.decode(b'', final=True)
+            if rv:
+                yield rv  # pragma: nocover
+
+        def generate():
+            while True:
+                chunk = self.raw.read(chunk_size)
+                if not chunk:
+                    break
+                yield chunk
+
+        chunks = generate()
+
+        if decode_unicode and self.encoding:
+            chunks = decode_stream(chunks, self)
+
+        return chunks
 
     def raise_for_status(self):
         """Raise stored error if one occurred.
