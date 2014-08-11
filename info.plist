@@ -45,11 +45,11 @@
 	<key>createdby</key>
 	<string>Michael Sverdlik</string>
 	<key>description</key>
-	<string></string>
+	<string>List and control Vagrant environments from Alfred2</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Vagrant Status</string>
+	<string>Vagrant</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -147,19 +147,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>triggerid</key>
-				<string>test.test</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
@@ -179,6 +166,19 @@
 			<string>alfred.workflow.output.notification</string>
 			<key>uid</key>
 			<string>CE905952-EA9C-4579-AB7C-C832499CC41C</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>test.test</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -219,6 +219,6 @@
 		</dict>
 	</dict>
 	<key>webaddress</key>
-	<string></string>
+	<string>https://github.com/m1keil/alfred-vagrant-workflow</string>
 </dict>
 </plist>
