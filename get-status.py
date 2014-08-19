@@ -8,6 +8,7 @@ from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_ERROR
 logger = None
 VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
 ICONS_STATES_PATH = 'icons/states'
+ICONS_ACTION_PATH = 'icons/actions'
 
 
 # TODO: vagrant_index should check env variable VAGRANT_HOME
@@ -21,7 +22,7 @@ def _read_index(path):
         return load(index)
 
 
-def _get_icon(state, provider):
+def _get_state_icon(state, provider):
     """
     Return appropriate icon path for state
     """
@@ -32,6 +33,16 @@ def _get_icon(state, provider):
         if not os.path.isfile(icon):
             icon = None
 
+    return icon
+
+
+def _get_action_icon(action):
+    """
+    Return icon path for action
+    """
+    icon = '{}/{}.png'.format(ICONS_ACTION_PATH, action)
+    if not os.path.isfile(icon):
+        icon = None
     return icon
 
 
@@ -78,48 +89,48 @@ def _list_machines(machines, workflow):
                           arg=item['id'],
                           uid=item['id'],
                           valid=True,
-                          icon=_get_icon(item['state'], item['provider']))
+                          icon=_get_state_icon(item['state'], item['provider']))
 
 
 def _list_machine_actions(mid, data, workflow):
     actions = {
         'up': {
-            'desc': 'starts and provisions the vagrant environment',
+            'desc': 'Starts and provisions the vagrant environment',
             'flags': None,
             'state': ['paused', 'stopped']
         },
         'halt': {
-            'desc': 'stops the machine',
+            'desc': 'Stops the machine',
             'flags': None,
             'state': ['running', 'paused']
         },
         'resume': {
-            'desc': 'resume a suspended machine',
+            'desc': 'Resume a suspended machine',
             'flags': None,
             'state': ['paused']
         },
         'suspend': {
-            'desc': 'suspends the machine',
+            'desc': 'Suspends the machine',
             'flags': None,
             'state': ['running']
         },
         'provision': {
-            'desc': 'provisions the machine',
+            'desc': 'Provisions the machine',
             'flags': None,
             'state': ['running']
         },
         'rdp': {
-            'desc': 'connects to machine via RDP',
+            'desc': 'Connects to machine via RDP',
             'flags': None,
             'state': ['running']
         },
         'ssh': {
-            'desc': 'connects to machine via SSH',
+            'desc': 'Connects to machine via SSH',
             'flags': None,
             'state': ['running']
         },
         'destroy': {
-            'desc': 'stops and deletes all traces of the machine',
+            'desc': 'Stops and deletes all traces of the machine',
             'flags': '-f',
             'state': ['running', 'paused', 'stopped']
         }
@@ -132,6 +143,7 @@ def _list_machine_actions(mid, data, workflow):
                                   subtitle=info['desc'],
                                   uid=action,
                                   arg='{} {}'.format(action, mid),
+                                  icon=_get_action_icon(action),
                                   valid=True)
     else:
         workflow.add_item(title="Machine doesn't exits",
