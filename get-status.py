@@ -71,8 +71,7 @@ def _get_search_key(machine):
     """
     fields = []
     fields.append(machine['name'])
-    fields.append(machine['id'])
-    fields.append(machine['state'])
+    fields.append(machine['vagrantfile_path'])
     fields.append(machine['provider'])
     logger.debug('search string: {}'.format(fields))
     return ' '.join(fields)
