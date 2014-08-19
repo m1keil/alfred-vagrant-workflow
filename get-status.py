@@ -82,21 +82,57 @@ def _list_machines(machines, workflow):
 
 
 def _list_machine_actions(mid, data, workflow):
-    actions = {'up': 'starts and provisions the vagrant environment',
-               'halt': 'stops the machine',
-               'resume': 'resume a suspended machine',
-               'suspend': 'suspends the machine',
-               'provision': 'provisions the machine',
-               'rdp': 'connects to machine via RDP',
-               'ssh': 'connects to machine via SSH',
-               'destroy': 'stops and deletes all traces of the machine'}
+    actions = {
+        'up': {
+            'desc': 'starts and provisions the vagrant environment',
+            'flags': None,
+            'state': ['paused', 'stopped']
+        },
+        'halt': {
+            'desc': 'stops the machine',
+            'flags': None,
+            'state': ['running', 'paused']
+        },
+        'resume': {
+            'desc': 'resume a suspended machine',
+            'flags': None,
+            'state': ['paused']
+        },
+        'suspend': {
+            'desc': 'suspends the machine',
+            'flags': None,
+            'state': ['running']
+        },
+        'provision': {
+            'desc': 'provisions the machine',
+            'flags': None,
+            'state': ['running']
+        },
+        'rdp': {
+            'desc': 'connects to machine via RDP',
+            'flags': None,
+            'state': ['running']
+        },
+        'ssh': {
+            'desc': 'connects to machine via SSH',
+            'flags': None,
+            'state': ['running']
+        },
+        'destroy': {
+            'desc': 'stops and deletes all traces of the machine',
+            'flags': '-f',
+            'state': ['running', 'paused', 'stopped']
+        }
+    }
+
     if mid in data['machines']:
-        for action, desc in actions.iteritems():
-            workflow.add_item(title=action,
-                              subtitle=desc,
-                              uid=action,
-                              arg='{} {}'.format(action, mid),
-                              valid=True)
+        for action, info in actions.iteritems():
+            if _normalize_state(data['machines'][mid]['state']) in info['state']:
+                workflow.add_item(title=action,
+                                  subtitle=info['desc'],
+                                  uid=action,
+                                  arg='{} {}'.format(action, mid),
+                                  valid=True)
     else:
         workflow.add_item(title="Machine doesn't exits",
                           subtitle='',
@@ -152,7 +188,8 @@ def main(wf):
         logger.debug('listing vagrant boxes')
         if args.filter:
             logger.debug('filter: {}'.format(args.filter))
-            modified_data = wf.filter(args.filter, modified_data, _get_search_key,
+            modified_data = wf.filter(args.filter, modified_data,
+                                      _get_search_key,
                                       match_on=MATCH_ALL ^ MATCH_ALLCHARS)
             logger.debug('filtered data: {}'.format(modified_data))
         _list_machines(modified_data, wf)
