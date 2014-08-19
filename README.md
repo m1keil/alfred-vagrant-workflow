@@ -4,7 +4,7 @@ This is a workflow for Alfred2 which enables quick control over [Vagrant](vagran
 
 ## Functionality:
 * Listing all existing Vagrant machines
-* Filtering VMs by name, state, provider, id
+* Filtering VMs by name, provider, vagrantfile path
 * Running actions (up, halt, provision, etc) on specific machines or whole environents
 * Connecting to machines via SSH or RDP
 
