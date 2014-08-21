@@ -55,23 +55,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>python get-status.py --id {query}</string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.script</string>
-			<key>uid</key>
-			<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -104,14 +87,14 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>python execute.py {query}</string>
+				<string>python get-status.py --id {query}</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.script</string>
 			<key>uid</key>
-			<string>060AECC5-1C73-405E-845E-3A924226C015</string>
+			<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -147,6 +130,36 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>python execute.py {query}</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.script</string>
+			<key>uid</key>
+			<string>060AECC5-1C73-405E-845E-3A924226C015</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>test.test</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
@@ -169,19 +182,6 @@
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>test.test</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
 	</array>
 	<key>readme</key>
 	<string></string>
@@ -190,12 +190,12 @@
 		<key>060AECC5-1C73-405E-845E-3A924226C015</key>
 		<dict>
 			<key>ypos</key>
-			<real>190</real>
+			<real>240</real>
 		</dict>
 		<key>28EE8EA4-6933-4E8E-8414-789A1E8B383C</key>
 		<dict>
 			<key>ypos</key>
-			<real>190</real>
+			<real>240</real>
 		</dict>
 		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
 		<dict>
@@ -215,7 +215,7 @@
 		<key>CE905952-EA9C-4579-AB7C-C832499CC41C</key>
 		<dict>
 			<key>ypos</key>
-			<real>340</real>
+			<real>370</real>
 		</dict>
 	</dict>
 	<key>webaddress</key>

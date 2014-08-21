@@ -78,8 +78,7 @@ def _get_search_key(machine):
 
 
 def _list_machines(machines, workflow):
-    subtitles_dict = {'cmd': 'run commands on this',
-                      'ctrl': 'run commands on env'}
+    subtitles_dict = {'cmd': 'Run commands on whole environment'}
 
     for item in machines:
         workflow.add_item(title=item['name'],
