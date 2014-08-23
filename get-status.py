@@ -2,7 +2,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from json import load
-from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_ERROR
+from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS
 from workflow.background import run_in_background, is_running
 from commons import run_alfred, send_notification, actions
 
@@ -87,35 +87,32 @@ def _get_search_key(machine):
     return ' '.join(fields)
 
 
-def _list_machines(machines, workflow):
+def _list_machines(machines, wf):
     subtitles_dict = {'cmd': 'Run commands on whole environment'}
 
     for item in machines:
-        workflow.add_item(title=item['name'],
-                          subtitle=item['vagrantfile_path'],
-                          modifier_subtitles=subtitles_dict,
-                          arg=item['id'],
-                          uid=item['id'],
-                          valid=True,
-                          icon=_get_state_icon(item['state'],
-                                               item['provider']))
+        wf.add_item(title=item['name'],
+                    subtitle=item['vagrantfile_path'],
+                    modifier_subtitles=subtitles_dict,
+                    arg=item['id'],
+                    uid=item['id'],
+                    valid=True,
+                    icon=_get_state_icon(item['state'], item['provider']))
 
 
-def _list_machine_actions(mid, data, workflow):
-    if mid in data['machines']:
+def _list_machine_actions(mid, data, wf):
+    try:
         for action, info in actions.iteritems():
-            if _normalize_state(data['machines'][mid]['state']) in info['state']:
-                workflow.add_item(title=action,
-                                  subtitle=info['desc'],
-                                  uid=action,
-                                  arg='{} {}'.format(mid, action),
-                                  icon=_get_action_icon(action),
-                                  valid=True)
-    else:
-        workflow.add_item(title="Machine doesn't exits",
-                          subtitle='',
-                          icon=ICON_ERROR,
-                          valid=False)
+            norm_state = _normalize_state(data['machines'][mid]['state'])
+            if norm_state in info['state']:
+                wf.add_item(title=action,
+                            subtitle=info['desc'],
+                            uid=action,
+                            arg='{} {}'.format(mid, action),
+                            icon=_get_action_icon(action),
+                            valid=True)
+    except KeyError:
+        raise Exception('Machine doesn\'t exists')
 
 
 def _validate_version(version):
@@ -135,8 +132,6 @@ def _rearrange_data(data):
 
 
 def main(wf):
-    # logger.debug('wf.args: {}'.format(wf.args))
-
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--list',
@@ -201,6 +196,6 @@ def main(wf):
 
 
 if __name__ == '__main__':
-    wf = Workflow()
-    logger = wf.logger
-    sys.exit(wf.run(main))
+    workflow = Workflow()
+    logger = workflow.logger
+    sys.exit(workflow.run(main))
