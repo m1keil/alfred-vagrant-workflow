@@ -1,38 +1,34 @@
 import sys
-import logging
 from os.path import isdir
-from os import devnull
-from subprocess import call
-from workflow import background
+from subprocess import call, check_output, CalledProcessError
+from workflow import Workflow
+from commons import send_notification
 
 
-def output_to_alfred(msg):
-    print msg
+def main(wf):
+    wf.logger.debug('argv: {}'.format(sys.argv))
 
+    env_id = sys.argv[1]
+    cmd = sys.argv[2:]
 
-def main():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler(sys.stdout))
-
-    # print 'argv: {}'.format(sys.argv)
-    logger.debug('argv: {}'.format(sys.argv))
-    if len(sys.argv) != 3:
-        output_to_alfred('Error')
+    actions = 'up halt resume suspend provision destroy'.split(' ')
+    if cmd[0] not in actions:
+        wf.logger.debug('Error, invalid action')
         sys.exit(1)
 
-    actions = 'up halt resume suspend provision rdp ssh destroy'.split(' ')
-    if sys.argv[1] not in actions:
-        output_to_alfred('Error')
-        sys.exit(1)
-
-    if isdir(sys.argv[2]):
+    if isdir(env_id):
         pass
     else:
-        out = call(['vagrant'] + sys.argv[1:], stdout=open(devnull, 'w'))
-        logger.debug(out)
-    sys.exit(1)
+        command = ['vagrant'] + cmd + [env_id]
+        try:
+            out = check_output(command)
+        except CalledProcessError as e:
+            wf.logger.debug('error: {}'.format(e))
+            send_notification('{} failed'.format(cmd[0]))
+        wf.logger.debug('finished: {}'.format(out))
+        send_notification('{} finished succesfully'.format(cmd[0]))
 
 
 if __name__ == '__main__':
-    main()
+    wf = Workflow()
+    wf.run(main)

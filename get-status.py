@@ -1,14 +1,18 @@
 import os
 import sys
 from argparse import ArgumentParser
-from subprocess import call
 from json import load
 from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_ERROR
+from workflow.background import run_in_background, is_running
+from commons import run_alfred, send_notification
 
 logger = None
 VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
 ICONS_STATES_PATH = 'icons/states'
 ICONS_ACTION_PATH = 'icons/actions'
+
+# TODO: cache vagrant index reading, file should be read only when doing
+#       'vagrant' in alfred. no need to query file EVERY time
 
 
 # TODO: vagrant_index should check env variable VAGRANT_HOME
@@ -61,7 +65,7 @@ def _normalize_state(state):
     else:
         out = 'unexpected'
 
-    logger.debug('normalized state. in: {}, out: {}'.format(state, out))
+    #logger.debug('normalized state. in: {}, out: {}'.format(state, out))
     return out
 
 
@@ -140,7 +144,7 @@ def _list_machine_actions(mid, data, workflow):
                 workflow.add_item(title=action,
                                   subtitle=info['desc'],
                                   uid=action,
-                                  arg='{} {}'.format(action, mid),
+                                  arg='{} {}'.format(mid, action),
                                   icon=_get_action_icon(action),
                                   valid=True)
     else:
@@ -167,50 +171,68 @@ def _rearrange_data(data):
     return result_list
 
 
-# TODO: handle possible failiure of osascript?
-def _run_alfred(action):
-    """Launch Alfred 2 via AppleScript and search for 'action'"""
-    call(['osascript', '-e',
-          'tell application "Alfred 2" to search "{}"'.format(action)])
-
-
 def main(wf):
-    logger.debug('wf.args: {}'.format(wf.args))
+    # logger.debug('wf.args: {}'.format(wf.args))
 
     parser = ArgumentParser()
-    # group = parser.add_mutually_exclusive_group(required=True)
-    parser.add_argument('--list', action='store_true',
-                        help='List vagrant machines')
-    parser.add_argument('--filter', nargs='?', help='Filter by FILTER')
-    parser.add_argument('--id', help='Show actions for specific machine')
-    parser.add_argument('--get', action='store_true', help='blah')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--list',
+                       nargs='?',
+                       const='',
+                       metavar='FILTER',
+                       help='List Vagrant environments. '
+                            'If %(metavar)s is provided, will filter results '
+                            'by fuzzy searching')
+    group.add_argument('--set',
+                       metavar='VALUE',
+                       help='Store %(metavar)s to be retrived later')
+    group.add_argument('--get',
+                       action='store_true',
+                       help='Get value which was previously stored')
+    group.add_argument('--execute',
+                       nargs=2,
+                       metavar=('ID', 'COMMAND'),
+                       help='Execute command on specific VM or entire'
+                            ' environment in the background')
     args = parser.parse_args(wf.args)
-    logger.debug('args: {}'.format(args))
+    # logger.debug('args: {}'.format(args))
 
     raw_data = _get_index_data()
-    logger.debug('raw data: {}'.format(raw_data))
+    # logger.debug('raw data: {}'.format(raw_data))
 
     _validate_version(raw_data['version'])
     modified_data = _rearrange_data(raw_data)
-    logger.debug('modified data: {}'.format(modified_data))
+    # logger.debug('modified data: {}'.format(modified_data))
 
-    if args.list:
-        logger.debug('listing vagrant boxes')
-        if args.filter:
-            logger.debug('filter: {}'.format(args.filter))
-            modified_data = wf.filter(args.filter, modified_data,
+    if args.list is not None:
+        # logger.debug('listing vagrant boxes')
+        if args.list:
+            logger.debug('filter: {}'.format(args.list))
+            modified_data = wf.filter(args.list, modified_data,
                                       _get_search_key,
                                       match_on=MATCH_ALL ^ MATCH_ALLCHARS)
-            logger.debug('filtered data: {}'.format(modified_data))
+            # logger.debug('filtered data: {}'.format(modified_data))
         _list_machines(modified_data, wf)
-    elif args.id:
-        logger.debug('saving id: {}'.format(args.id))
-        wf.settings['id'] = args.id
-        _run_alfred(':vagrant-id')
+    elif args.set:
+        logger.debug('saving id: {}'.format(args.set))
+        wf.settings['id'] = args.set
+        run_alfred(':vagrant-id')
     elif args.get:
         mid = wf.settings.get('id')
         logger.debug('retrieved id: {}'.format(mid))
         _list_machine_actions(mid, raw_data, wf)
+    elif args.execute:
+        vpath = args.execute[0]
+        if not os.path.isdir(vpath):
+            vpath = raw_data['machines'][args.execute[0]]['vagrantfile_path']
+
+        task_name = 'exec_{}'.format(hash(vpath))
+        cmd = ['/usr/bin/python', 'execute.py'] + args.execute
+        if not is_running(task_name):
+            run_in_background(task_name, cmd)
+        else:
+            send_notification('Task in progress. \n'
+                              'Aborting')
 
     wf.send_feedback()
 

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.sverdlik.michael</string>
+	<string>com.alfredapp.sverdlik.michael</string>
 	<key>category</key>
 	<string>Productivity</string>
 	<key>connections</key>
@@ -45,13 +45,30 @@
 	<key>createdby</key>
 	<string>Michael Sverdlik</string>
 	<key>description</key>
-	<string>List and control Vagrant environments from Alfred2</string>
+	<string>List and control Vagrant environments with Alfred2</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
 	<string>Vagrant</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>python get-status.py --set {query}</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.script</string>
+			<key>uid</key>
+			<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -64,7 +81,7 @@
 				<key>runningsubtext</key>
 				<string>Fetching..</string>
 				<key>script</key>
-				<string>python get-status.py --list --filter {query}</string>
+				<string>python get-status.py --list {query}</string>
 				<key>subtext</key>
 				<string>Show Vagrant global status</string>
 				<key>title</key>
@@ -78,23 +95,6 @@
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>python get-status.py --id {query}</string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.script</string>
-			<key>uid</key>
-			<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -133,7 +133,7 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>script</key>
-				<string>python execute.py {query}</string>
+				<string>python get-status.py --execute {query}</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
@@ -141,19 +141,6 @@
 			<string>alfred.workflow.output.script</string>
 			<key>uid</key>
 			<string>060AECC5-1C73-405E-845E-3A924226C015</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>test.test</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -173,12 +160,25 @@
 				<key>text</key>
 				<string>{query}</string>
 				<key>title</key>
-				<string>Vagrant task finished</string>
+				<string>Vagrant</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.notification</string>
 			<key>uid</key>
 			<string>CE905952-EA9C-4579-AB7C-C832499CC41C</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>send_notification</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -205,7 +205,7 @@
 		<key>7B0FCBA8-328C-47D0-93FE-724007AE7921</key>
 		<dict>
 			<key>ypos</key>
-			<real>340</real>
+			<real>370</real>
 		</dict>
 		<key>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</key>
 		<dict>
