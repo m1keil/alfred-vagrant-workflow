@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.alfredapp.sverdlik.michael</string>
+	<string>com.sverdlik.michael</string>
 	<key>category</key>
 	<string>Productivity</string>
 	<key>connections</key>

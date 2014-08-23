@@ -47,7 +47,7 @@ actions = {
 def send_notification(msg):
     call(['osascript', '-e',
           'tell application "Alfred 2" to run trigger "send_notification" '
-          'in workflow "com.alfredapp.sverdlik.michael" '
+          'in workflow "com.sverdlik.michael" '
           'with argument "{}"'.format(msg)])
 
 
