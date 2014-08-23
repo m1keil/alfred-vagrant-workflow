@@ -1,12 +1,12 @@
 # Alfred Vagrant Workflow
 
-This is a workflow for Alfred2 which enables quick control over [Vagrant](vagrantup.com).
+This is a workflow for [Alfred2](http://www.alfredapp.com) which provides quick control for [Vagrant](vagrantup.com).
 
 ## Functionality:
-* Listing all existing Vagrant machines
-* Filtering VMs by name, provider, vagrantfile path
-* Running actions (up, halt, provision, etc) on specific machines or whole environents
-* Connecting to machines via SSH or RDP
+* Listing all existing Vagrant environments
+* Filtering environments by name, provider, Vagrantfile path
+* Running actions (up, halt, provision, etc) on specific virtual machines or whole environent
+* Quickly connect to virtual machine via SSH or RDP
 
 ## How does it work?
 Since Vagrant 1.6 it's possible to list all Vagrant running environments via `vagrant global-status` command.
