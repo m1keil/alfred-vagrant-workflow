@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from json import load
 from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_ERROR
 from workflow.background import run_in_background, is_running
-from commons import run_alfred, send_notification
+from commons import run_alfred, send_notification, actions
 
 logger = None
 VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
@@ -15,15 +15,23 @@ ICONS_ACTION_PATH = 'icons/actions'
 #       'vagrant' in alfred. no need to query file EVERY time
 
 
-# TODO: vagrant_index should check env variable VAGRANT_HOME
 def _get_index_data():
-    return _read_index(VAGRANT_DEFAULT_INDEX)
+    try:
+        index_path = os.path.join(os.environ['VAGRANT_HOME'],
+                                  'data/machine-index/index')
+    except KeyError:
+        index_path = VAGRANT_DEFAULT_INDEX
+    return _read_index(index_path)
 
 
-# TODO: handle invalid json
 def _read_index(path):
-    with open(os.path.expanduser(path)) as index:
-        return load(index)
+    try:
+        with open(os.path.expanduser(path)) as index:
+            return load(index)
+    except IOError:
+        raise Exception('Index file {} not found!'.format(path))
+    except ValueError:
+        raise Exception('Index file {} is corrupted!'.format(path))
 
 
 def _get_state_icon(state, provider):
@@ -73,11 +81,9 @@ def _get_search_key(machine):
     """
     Return search key to be used by Workflow.filter
     """
-    fields = []
-    fields.append(machine['name'])
-    fields.append(machine['vagrantfile_path'])
-    fields.append(machine['provider'])
-    logger.debug('search string: {}'.format(fields))
+    fields = [machine['name'],
+              machine['vagrantfile_path'],
+              machine['provider']]
     return ' '.join(fields)
 
 
@@ -91,53 +97,11 @@ def _list_machines(machines, workflow):
                           arg=item['id'],
                           uid=item['id'],
                           valid=True,
-                          icon=_get_state_icon(item['state'], item['provider']))
+                          icon=_get_state_icon(item['state'],
+                                               item['provider']))
 
 
 def _list_machine_actions(mid, data, workflow):
-    actions = {
-        'up': {
-            'desc': 'Starts and provisions the vagrant environment',
-            'flags': None,
-            'state': ['paused', 'stopped']
-        },
-        'halt': {
-            'desc': 'Stops the machine',
-            'flags': None,
-            'state': ['running', 'paused']
-        },
-        'resume': {
-            'desc': 'Resume a suspended machine',
-            'flags': None,
-            'state': ['paused']
-        },
-        'suspend': {
-            'desc': 'Suspends the machine',
-            'flags': None,
-            'state': ['running']
-        },
-        'provision': {
-            'desc': 'Provisions the machine',
-            'flags': None,
-            'state': ['running']
-        },
-        'rdp': {
-            'desc': 'Connects to machine via RDP',
-            'flags': None,
-            'state': ['running']
-        },
-        'ssh': {
-            'desc': 'Connects to machine via SSH',
-            'flags': None,
-            'state': ['running']
-        },
-        'destroy': {
-            'desc': 'Stops and deletes all traces of the machine',
-            'flags': '-f',
-            'state': ['running', 'paused', 'stopped']
-        }
-    }
-
     if mid in data['machines']:
         for action, info in actions.iteritems():
             if _normalize_state(data['machines'][mid]['state']) in info['state']:
@@ -155,7 +119,6 @@ def _list_machine_actions(mid, data, workflow):
 
 
 def _validate_version(version):
-    logger.debug('index file version: {}'.format(version))
     if version != 1:
         raise Exception('Unsupported Vagrant index version')
 
