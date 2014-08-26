@@ -57,7 +57,7 @@
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Vagrant</string>
+	<string>VagrantUP</string>
 	<key>objects</key>
 	<array>
 		<dict>

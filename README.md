@@ -3,18 +3,25 @@
 This is a workflow for [Alfred2](http://www.alfredapp.com) which provides quick control for [Vagrant](vagrantup.com).
 
 ## Functionality:
-* Listing all existing Vagrant environments
-* Filtering environments by name, provider, Vagrantfile path
-* Running actions (up, halt, provision, etc) on specific virtual machines or whole environent
-* Quickly connect to virtual machine via SSH or RDP
+* List all existing Vagrant environments
+* Filtering environments by name, provider, path
+* Execute actions (up, halt, provision, etc) on specific virtual machines or whole environment
 
-## How does it work?
-Since Vagrant 1.6 it's possible to list all Vagrant running environments via `vagrant global-status` command.
-My workflow utilize this command to get a list of current Vagrant state.
+## Downloads
 
-**Note:** Currently the implemantation of `global-status` is still a bit buggy (machine status isn't being updated in some cases) so I'm going to add few workarounds in my code.
 
 ## Screenshots:
-![Screenshot](/screenshot.jpg?raw=true "Vagrant global-status")
+![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
+![Screenshot](screenshots/machine-actions.jpg?raw=true "Vagrant actions")
+![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
 
-**Note:** This is work in progress.
+## Todo:
+* Add SSH/RDP quick connect
+* Handle Vagrant suspend bug (prune cache on list)
+* Add tests
+
+## How does it work?
+Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` sub-command.
+This workflow utilize this command to get a list of current Vagrant environments.
+
+**Note:** Currently the implemantation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).
