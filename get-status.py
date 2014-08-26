@@ -11,8 +11,11 @@ VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
 ICONS_STATES_PATH = 'icons/states'
 ICONS_ACTION_PATH = 'icons/actions'
 
-# TODO: cache vagrant index reading, file should be read only when doing
-#       'vagrant' in alfred. no need to query file EVERY time
+#todo: convert all paths to absolute
+#todo: open terminal in vagrantfile dir
+#todo: rdp & ssh commands
+#todo: support dir actions
+#todo: handle vagrant bug with global-status and suspend
 
 
 def _get_index_data():
@@ -108,11 +111,24 @@ def _list_machine_actions(mid, data, wf):
                 wf.add_item(title=action,
                             subtitle=info['desc'],
                             uid=action,
-                            arg='{} {}'.format(mid, action),
+                            arg='{} {!r}'.format(
+                                mid, ' '.join([action, info['flags'] or ''])),
                             icon=_get_action_icon(action),
                             valid=True)
     except KeyError:
         raise Exception('Machine doesn\'t exists')
+
+
+def _list_dir_actions(path, data, wf):
+    for action, info in actions.iteritems():
+        if info['directory']:
+            wf.add_item(title=action,
+                        subtitle=info['desc'],
+                        uid=action,
+                        arg='{} {!r}'.format(
+                            path, ' '.join([action, info['flags'] or ''])),
+                        icon=_get_action_icon(action),
+                        valid=True)
 
 
 def _validate_version(version):
@@ -142,8 +158,11 @@ def main(wf):
                             'If %(metavar)s is provided, will filter results '
                             'by fuzzy searching')
     group.add_argument('--set',
-                       metavar='VALUE',
+                       metavar='MACHINE_ID',
                        help='Store %(metavar)s to be retrived later')
+    group.add_argument('--setenv',
+                       metavar='ENV_PATH',
+                       help='Store %(metavar)s to be retrived later as env dir')
     group.add_argument('--get',
                        action='store_true',
                        help='Get value which was previously stored')
@@ -165,7 +184,6 @@ def main(wf):
     if args.list is not None:
         # logger.debug('listing vagrant boxes')
         if args.list:
-            logger.debug('filter: {}'.format(args.list))
             modified_data = wf.filter(args.list, modified_data,
                                       _get_search_key,
                                       match_on=MATCH_ALL ^ MATCH_ALLCHARS)
@@ -175,10 +193,18 @@ def main(wf):
         logger.debug('saving id: {}'.format(args.set))
         wf.settings['id'] = args.set
         run_alfred(':vagrant-id')
+    elif args.setenv:
+        vagrant_dir = raw_data['machines'][args.setenv]['vagrantfile_path']
+        logger.debug('saving id: {}'.format(vagrant_dir))
+        wf.settings['id'] = vagrant_dir
+        run_alfred(':vagrant-id')
     elif args.get:
         mid = wf.settings.get('id')
         logger.debug('retrieved id: {}'.format(mid))
-        _list_machine_actions(mid, raw_data, wf)
+        if os.path.isdir(mid):
+            _list_dir_actions(mid, raw_data, wf)
+        else:
+            _list_machine_actions(mid, raw_data, wf)
     elif args.execute:
         vpath = args.execute[0]
         if not os.path.isdir(vpath):
@@ -189,8 +215,7 @@ def main(wf):
         if not is_running(task_name):
             run_in_background(task_name, cmd)
         else:
-            send_notification('Task in progress. \n'
-                              'Aborting')
+            send_notification('Task in progress. \nAborting')
 
     wf.send_feedback()
 

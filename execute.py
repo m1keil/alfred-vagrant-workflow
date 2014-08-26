@@ -1,33 +1,30 @@
 import sys
-from os.path import isdir
+import os
 from subprocess import check_output, CalledProcessError
 from workflow import Workflow
 from commons import send_notification
 
 
 def main(wf):
-    wf.logger.debug('argv: {}'.format(sys.argv))
-
     env_id = sys.argv[1]
-    cmd = sys.argv[2:]
+    action = sys.argv[2].split(' ')[0]
+    flags = sys.argv[2].strip().split(' ')[1:]
 
-    actions = 'up halt resume suspend provision destroy'.split(' ')
-    if cmd[0] not in actions:
-        wf.logger.debug('Error, invalid action')
-        sys.exit(1)
-
-    if isdir(env_id):
-        pass
+    if os.path.isdir(env_id):
+        vagrant_path = env_id
+        command = ['vagrant', action] + flags
     else:
-        command = ['vagrant'] + cmd + [env_id]
-        try:
-            out = check_output(command)
-            wf.logger.debug('finished: {}'.format(out))
-        except CalledProcessError as e:
-            wf.logger.debug('error: {}'.format(e))
-            send_notification('{} failed'.format(cmd[0]))
-        send_notification('{} finished succesfully'.format(cmd[0]))
+        vagrant_path = None
+        command = ['vagrant', action] + flags + [env_id]
 
+    try:
+        out = check_output(command, cwd=vagrant_path)
+        wf.logger.debug('finished: {}'.format(out))
+    except CalledProcessError as e:
+        wf.logger.debug('error: {}'.format(e))
+        send_notification('{} failed'.format(action))
+    else:
+        send_notification('{} finished succesfully'.format(action))
 
 if __name__ == '__main__':
     workflow = Workflow()

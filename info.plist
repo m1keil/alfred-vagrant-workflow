@@ -129,17 +129,15 @@
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
-				<integer>127</integer>
+				<integer>0</integer>
 				<key>keyword</key>
 				<string>:vagrant-id</string>
-				<key>runningsubtext</key>
-				<string>wait..</string>
 				<key>script</key>
 				<string>python get-status.py --get</string>
 				<key>subtext</key>
-				<string>Subtext</string>
+				<string>Actions on Vagrant environment</string>
 				<key>title</key>
-				<string>Title</string>
+				<string>Vagrant</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
