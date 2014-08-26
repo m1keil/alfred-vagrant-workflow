@@ -11,10 +11,10 @@ VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
 ICONS_STATES_PATH = 'icons/states'
 ICONS_ACTION_PATH = 'icons/actions'
 
+#todo: rdp & ssh commands
+#todo:
 #todo: convert all paths to absolute
 #todo: open terminal in vagrantfile dir
-#todo: rdp & ssh commands
-#todo: support dir actions
 #todo: handle vagrant bug with global-status and suspend
 
 
@@ -119,7 +119,7 @@ def _list_machine_actions(mid, data, wf):
         raise Exception('Machine doesn\'t exists')
 
 
-def _list_dir_actions(path, data, wf):
+def _list_dir_actions(path, wf):
     for action, info in actions.iteritems():
         if info['directory']:
             wf.add_item(title=action,
@@ -202,7 +202,7 @@ def main(wf):
         mid = wf.settings.get('id')
         logger.debug('retrieved id: {}'.format(mid))
         if os.path.isdir(mid):
-            _list_dir_actions(mid, raw_data, wf)
+            _list_dir_actions(mid, wf)
         else:
             _list_machine_actions(mid, raw_data, wf)
     elif args.execute:
