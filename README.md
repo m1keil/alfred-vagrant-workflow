@@ -8,7 +8,7 @@ This is a workflow for [Alfred2](http://www.alfredapp.com) which provides quick 
 * Execute actions (up, halt, provision, etc) on specific virtual machines or whole environment
 
 ## Downloads
-You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub]()
+You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow)
 
 ## Screenshots:
 ![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
