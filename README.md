@@ -15,11 +15,6 @@ You can download this workflow from [Packal](http://www.packal.org/workflow/vagr
 ![Screenshot](screenshots/machine-actions.jpg?raw=true "Vagrant actions")
 ![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
 
-## Todo:
-* Add SSH/RDP quick connect
-* Handle Vagrant suspend bug (prune cache on list)
-* Add tests
-
 ## How does it work?
 Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` sub-command.
 This workflow utilize this command to get a list of current Vagrant environments.
