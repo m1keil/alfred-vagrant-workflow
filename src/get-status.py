@@ -11,11 +11,6 @@ VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
 ICONS_STATES_PATH = 'icons/states'
 ICONS_ACTION_PATH = 'icons/actions'
 
-#todo: rdp & ssh commands
-#todo: convert all paths to absolute
-#todo: open terminal in vagrantfile dir
-#todo: handle vagrant bug with global-status and suspend
-
 
 def _get_machine_data():
     try:
