@@ -1,11 +1,13 @@
 # VagrantUP
 
-This is a workflow for [Alfred2](http://www.alfredapp.com) which provides quick control for [Vagrant](vagrantup.com).
+A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control over [Vagrant](vagrantup.com).
+
+[![Build Status](https://travis-ci.org/m1keil/alfred-vagrant-workflow.svg?branch=master)](https://travis-ci.org/m1keil/alfred-vagrant-workflow)
 
 ## Functionality:
-* List all existing Vagrant environments
-* Filtering environments by name, provider, path
-* Execute actions (up, halt, provision, etc) on specific virtual machines or whole environment
+* List existing Vagrant environments
+* Filter environments by name, provider, path
+* Execute actions on specific VM or whole environment
 
 ## Downloads
 You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow)
