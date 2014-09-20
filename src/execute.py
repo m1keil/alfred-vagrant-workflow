@@ -1,7 +1,7 @@
 import sys
 import os
 import tempfile
-from subprocess import check_output, CalledProcessError
+from subprocess import Popen
 from workflow import Workflow
 from commons import send_notification
 
@@ -27,16 +27,16 @@ def main(wf):
     else:
         command = ['vagrant', action] + flags + [env_id]
 
-    try:
-        out = check_output(command, cwd=vagrant_path)
-        wf.logger.debug('finished: {}'.format(out))
-    except CalledProcessError as e:
-        wf.logger.debug('error: {}'.format(e))
-        if show_notification:
-            send_notification('{} failed'.format(action))
-    else:
-        if show_notification:
-            send_notification('{} finished succesfully'.format(action))
+    process = Popen(command, cwd=vagrant_path)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    message = 'finished succesfully'
+    if retcode:
+        wf.logger.debug('execution failed:\n{}'.format(output))
+        message = 'failed'
+    if show_notification:
+        send_notification('{} {}'.format(action, message))
+
 
 if __name__ == '__main__':
     workflow = Workflow()
