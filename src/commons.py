@@ -7,55 +7,55 @@ from subprocess import call
 # 'desc': description field showed in alfred
 # 'flags': additional command line flags for vagrant command
 # 'state': machine state for which this action needs to be showed
-# 'directory': flag to mark if action is possible on entire vagrant dir
+# 'dir_action': flag to mark if action is possible on entire vagrant dir
 actions = {
     'up': {
         'desc': 'Starts and provisions the vagrant environment',
         'flags': None,
         'state': ['paused', 'stopped'],
-        'directory': True,
+        'dir_action': True,
     },
     'halt': {
         'desc': 'Stops the machine',
         'flags': None,
         'state': ['running', 'paused'],
-        'directory': True,
+        'dir_action': True,
     },
     'resume': {
         'desc': 'Resume a suspended machine',
         'flags': None,
         'state': ['paused'],
-        'directory': True,
+        'dir_action': True,
     },
     'suspend': {
         'desc': 'Suspends the machine',
         'flags': None,
         'state': ['running'],
-        'directory': True,
+        'dir_action': True,
     },
     'provision': {
         'desc': 'Provisions the machine',
         'flags': None,
         'state': ['running'],
-        'directory': True,
+        'dir_action': True,
     },
     'rdp': {
         'desc': 'Connects to machine via RDP',
         'flags': None,
         'state': ['running'],
-        'directory': False,
+        'dir_action': False,
     },
     'ssh': {
         'desc': 'Connects to machine via SSH',
         'flags': None,
         'state': ['running'],
-        'directory': False,
+        'dir_action': False,
     },
     'destroy': {
         'desc': 'Stops and deletes all traces of the machine',
         'flags': '-f',
         'state': ['running', 'paused', 'stopped'],
-        'directory': True,
+        'dir_action': True,
     }
 }
 
