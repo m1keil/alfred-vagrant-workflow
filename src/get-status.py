@@ -167,22 +167,24 @@ def main(wf):
         _list_machines(machine_data, wf)
     elif args.set:
         logger.debug('saving id: {}'.format(args.set))
-        wf.settings['id'] = args.set
+        wf.cache_data('id', args.set)
         run_alfred(':vagrant-id')
     elif args.setenv:
         machine_data = _get_machine_data()
         vagrant_dir = machine_data[args.setenv]['vagrantfile_path']
         logger.debug('saving id: {}'.format(vagrant_dir))
-        wf.settings['id'] = vagrant_dir
+        wf.cache_data('id', vagrant_dir)
         run_alfred(':vagrant-id')
     elif args.get:
-        mid = wf.settings.get('id')
-        logger.debug('retrieved id: {}'.format(mid))
-        if os.path.isdir(mid):
-            _list_dir_actions(mid, wf)
+        eid = wf.cached_data('id', max_age=2)
+        logger.debug('retrieved id: {}'.format(eid))
+        if eid is None:
+            raise RuntimeError('No environment id cached')
+        elif os.path.isdir(eid):
+            _list_dir_actions(eid, wf)
         else:
             machine_data = _get_machine_data()
-            _list_machine_actions(mid, machine_data, wf)
+            _list_machine_actions(eid, machine_data, wf)
     elif args.execute:
         machine_data = _get_machine_data()
         vpath = args.execute[0]
