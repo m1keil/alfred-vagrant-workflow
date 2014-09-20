@@ -59,6 +59,13 @@ actions = {
     }
 }
 
+states = {
+    ('running', 'up', 'on'): 'running',
+    ('paused', 'suspended', 'saved'): 'paused',
+    ('stopped', 'poweroff', 'not running', 'down'): 'stopped',
+    'not created': 'missing',
+}
+
 
 def send_notification(msg):
     call(['osascript', '-e',

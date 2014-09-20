@@ -4,10 +4,10 @@ from argparse import ArgumentParser
 from json import load
 from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS
 from workflow.background import run_in_background, is_running
-from commons import run_alfred, send_notification, actions
+from commons import run_alfred, send_notification, actions, states
 
 logger = None
-VAGRANT_DEFAULT_INDEX = '~/.vagrant.d/data/machine-index/index'
+VAGRANT_INDEX = os.path.expanduser('~/.vagrant.d/data/machine-index/index')
 ICONS_STATES_PATH = 'icons/states'
 ICONS_ACTION_PATH = 'icons/actions'
 
@@ -17,7 +17,7 @@ def _get_machine_data():
         index_path = os.path.join(os.environ['VAGRANT_HOME'],
                                   'data/machine-index/index')
     except KeyError:
-        index_path = VAGRANT_DEFAULT_INDEX
+        index_path = VAGRANT_INDEX
     data = _read_index(index_path)
     _validate_version(data['version'])
     return data['machines']
@@ -25,7 +25,7 @@ def _get_machine_data():
 
 def _read_index(path):
     try:
-        with open(os.path.expanduser(path)) as index:
+        with open(path) as index:
             return load(index)
     except IOError:
         raise Exception('Index file {} not found!'.format(path))
@@ -61,17 +61,11 @@ def _normalize_state(state):
     """
     Normalize environment state
     """
-    if state in ('running', 'up', 'on'):
-        out = 'running'
-    elif state in ('paused', 'suspended', 'saved'):
-        out = 'paused'
-    elif state in ('stopped', 'poweroff', 'not running', 'down'):
-        out = 'stopped'
-    elif state in 'not created':
-        out = 'missing'
-    else:
-        out = 'unexpected'
-    return out
+    for states_tup, output in states.iteritems():
+        if state in states_tup:
+            return output
+
+    return 'unexpected'
 
 
 def _get_search_key(machine):
