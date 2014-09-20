@@ -4,13 +4,36 @@ A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control 
 
 [![Build Status](https://travis-ci.org/m1keil/alfred-vagrant-workflow.svg?branch=master)](https://travis-ci.org/m1keil/alfred-vagrant-workflow)
 
-## Functionality:
+## Functionality
 * List existing Vagrant environments
 * Filter environments by name, provider, path
 * Execute actions on specific VM or whole environment
 
-## Downloads
-You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow)
+## Downloads & Install
+You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow).
+
+To install workflow, simply double click the file you just downloaded. For additional instructions about installing workflows, check [Alfred's support](http://support.alfredapp.com/workflows:installing).
+
+## Usage
+#### List Vagrant environments
+To list all existing Vagrant environments, use keyword `vagrant`.
+
+#### Filtering list
+You can filter the list by machine name, provider name or path. 
+Filtering is done with [fuzzy search](http://en.wikipedia.org/wiki/Approximate_string_matching). Enter your filter string after `vagrant` keyword to filter the list.
+
+**Examples:**
+ - `vagrant virtualbox` - Will show only machines running under Virtualbox provider
+ - `vagrant default` - Will match any machines named `default` or any machines that `default` is part of their Vagrantfile path.
+
+#### Executing actions
+To execute Vagrant commands directly from Alfred just choose the machine and press Enter. You will get a list of possible actions for the choosen machine.
+
+Actions will vary depanding on the state of the machine. So if machine is stopped, you cannot run provision for example.
+
+It also possible to run commands on all of the machines in Vagrantfile (multi-machine environment). Just choose one machine from the environment and press enter while holding the Command key.
+
+**NOTE:** RDP & SSH actions are being executed by the terminal that is configured to handle the `.command` file extension.
 
 ## Screenshots:
 ![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
