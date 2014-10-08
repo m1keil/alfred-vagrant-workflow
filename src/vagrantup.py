@@ -7,30 +7,19 @@ from workflow.background import run_in_background, is_running
 from commons import run_alfred, send_notification, actions, states
 
 logger = None
-VAGRANT_INDEX = os.path.expanduser('~/.vagrant.d/data/machine-index/index')
-ICONS_STATES_PATH = 'icons/states'
-ICONS_ACTION_PATH = 'icons/actions'
+VAGRANT_HOME = os.path.expanduser('~/.vagrant.d')
+VAGRANT_INDEX = os.path.join('data', 'machine-index', 'index')
+ICONS_STATES_PATH = os.path.join(Workflow().workflowdir, 'icons', 'states')
+ICONS_ACTION_PATH = os.path.join(Workflow().workflowdir, 'icons', 'actions')
 
 
 def _get_machine_data():
-    try:
-        index_path = os.path.join(os.environ['VAGRANT_HOME'],
-                                  'data/machine-index/index')
-    except KeyError:
-        index_path = VAGRANT_INDEX
-    data = _read_index(index_path)
+    vagrant_home = os.environ.get('VAGRANT_HOME', VAGRANT_HOME)
+    index_path = os.path.join(vagrant_home, VAGRANT_INDEX)
+    with open(index_path) as index:
+        data = load(index)
     _validate_version(data['version'])
     return data['machines']
-
-
-def _read_index(path):
-    try:
-        with open(path) as index:
-            return load(index)
-    except IOError:
-        raise Exception('Index file {} not found!'.format(path))
-    except ValueError:
-        raise Exception('Index file {} is corrupted!'.format(path))
 
 
 def _get_state_icon(state, provider):
@@ -38,23 +27,28 @@ def _get_state_icon(state, provider):
     Return appropriate icon path for state
     """
     norm_state = _normalize_state(state)
-    icon = '{}/{}.{}.png'.format(ICONS_STATES_PATH, provider, norm_state)
-    if not os.path.isfile(icon):
-        icon = '{}/{}.{}.png'.format(ICONS_STATES_PATH, 'vagrant', norm_state)
-        if not os.path.isfile(icon):
-            icon = None
+    icon = os.path.join(ICONS_STATES_PATH,
+                        '{0}.{1}.png'.format(provider, norm_state))
+    default = os.path.join(ICONS_STATES_PATH,
+                           'vagrant.{0}.png'.format(norm_state))
 
-    return icon
+    if os.path.isfile(icon):
+        return icon
+    elif os.path.isfile(default):
+        return default
+    else:
+        return None
 
 
 def _get_action_icon(action):
     """
     Return icon path for action
     """
-    icon = '{}/{}.png'.format(ICONS_ACTION_PATH, action)
-    if not os.path.isfile(icon):
-        icon = None
-    return icon
+    icon = os.path.join(ICONS_ACTION_PATH, '{0}.png'.format(action))
+    if os.path.isfile(icon):
+        return icon
+    else:
+        return None
 
 
 def _normalize_state(state):
@@ -118,7 +112,7 @@ def _list_actions(eid, wf):
 
 def _validate_version(version):
     if version != 1:
-        raise Exception('Unsupported Vagrant index version')
+        raise Exception('Unsupported index version')
 
 
 def main(wf):
