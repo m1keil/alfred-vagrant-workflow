@@ -1,4 +1,6 @@
 import os
+import string
+import random
 import unittest
 import tempfile
 from copy import deepcopy
@@ -6,6 +8,7 @@ from json import dump
 
 import vagrantup
 import commons
+import workflow
 
 
 class Test(unittest.TestCase):
@@ -39,7 +42,7 @@ class Test(unittest.TestCase):
         vagrantup.ICONS_STATES_PATH = os.getcwd()
         self.assertTrue(vagrantup._get_state_icon('x', 'y') is None)
 
-    def _get_action_icon(self):
+    def test_get_action_icon(self):
         actions = ['destroy', 'halt', 'provision',
                    'rdp', 'resume', 'ssh', 'suspend', 'up']
         for action in actions:
@@ -49,11 +52,24 @@ class Test(unittest.TestCase):
 
         self.assertTrue(vagrantup._get_action_icon('x') is None)
 
+    def test_list_actions(self):
+        wf = workflow.Workflow()
+        machines = generate_index()['machines']
+        vagrantup._list_machines(machines, wf)
+        for item in wf._items:
+            mid = item.arg
+            meta = machines[mid]
+            self.assertTrue(item.arg in machines.keys())
+            self.assertTrue(item.uid in machines.keys())
+            self.assertEqual(item.title, meta['name'])
+            self.assertEqual(item.subtitle, meta['vagrantfile_path'])
+            self.assertEqual(item.valid, True)
+            self.assertFalse(item.icon, None)
 
 class TestVagrantHome(unittest.TestCase):
     def setUp(self):
         self.original_environ = deepcopy(os.environ)
-        self.index_content = {'version': 1, 'machines': {'test': 'data'}}
+        self.index_content = generate_index()
         self.vagrant_home = create_vagrant_home(self.index_content)
 
     def tearDown(self):
@@ -62,7 +78,7 @@ class TestVagrantHome(unittest.TestCase):
     def test_get_machine_data_with_env(self):
         os.environ['VAGRANT_HOME'] = self.vagrant_home
         index_data = vagrantup._get_machine_data()
-        self.assertEqual({'test': 'data'}, index_data)
+        self.assertEqual(self.index_content['machines'], index_data)
 
     def test_get_machine_data(self):
         vagrantup.VAGRANT_HOME = self.vagrant_home
@@ -78,6 +94,41 @@ def create_vagrant_home(index_content):
     with open(full_path, 'w') as f:
         dump(index_content, f)
     return vagrant_home
+
+
+def generate_index(machine_number=3):
+    index = {
+        'version': 1,
+        'machines': {}
+    }
+    for _ in range(machine_number):
+        index['machines'].update(generate_machine())
+    return index
+
+
+def id_generator(size=32, chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def generate_machine():
+    return {
+        id_generator(): {
+            'extra_data': {
+                'box': {
+                    'name': 'ubuntu/trusty64',
+                    'provider': 'virtualbox',
+                    'version': '1.0',
+                },
+            },
+            'local_data_path': '/tmp/file/.vagrant',
+            'name': 'default',
+            'provider': 'virtualbox',
+            'state': 'running',
+            'updated_at': None,
+            'vagrantfile_name': None,
+            'vagrantfile_path': '/tmp/file',
+        }
+    }
 
 if __name__ == '__main__':
     unittest.main()
