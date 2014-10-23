@@ -163,7 +163,7 @@ def main(wf):
     elif args.get:
         eid = wf.cached_data('id', max_age=2)
         vpath = eid
-        if not os.path.isfile(eid):
+        if not os.path.isdir(eid):
             machine_data = get_machine_data()
             vpath = machine_data[eid]['vagrantfile_path']
         task_name = 'exec_{0}'.format(hash(vpath))
