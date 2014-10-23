@@ -190,8 +190,7 @@ def main(wf):
         elif is_running(task_name):
             show_warning('Task in progress',
                          'Please wait for previous task '
-                         'on this environment to finish',
-                         wf)
+                         'on this environment to finish', wf)
         else:
             list_actions(eid, wf)
     elif args.execute:

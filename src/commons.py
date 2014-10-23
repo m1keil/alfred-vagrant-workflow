@@ -90,6 +90,13 @@ def open_terminal(path):
     external_trigger('open_dir', path)
 
 
+def run_vagrant(args):
+    """
+    Trigger running Vagrant in terminal
+    """
+    external_trigger('run_vagrant', args)
+
+
 def run_alfred(action):
     """
     Launch Alfred 2 via AppleScript and search for 'action'

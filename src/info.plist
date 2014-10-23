@@ -19,6 +19,17 @@
 				<string></string>
 			</dict>
 		</array>
+		<key>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>23A94193-5343-4AAE-8D69-16D55991EA8B</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
 		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
 		<array>
 			<dict>
@@ -269,6 +280,34 @@
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>run_vagrant</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>clear; vagrant {query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.terminalcommand</string>
+			<key>uid</key>
+			<string>23A94193-5343-4AAE-8D69-16D55991EA8B</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string></string>
@@ -278,6 +317,11 @@
 		<dict>
 			<key>ypos</key>
 			<real>140</real>
+		</dict>
+		<key>23A94193-5343-4AAE-8D69-16D55991EA8B</key>
+		<dict>
+			<key>ypos</key>
+			<real>750</real>
 		</dict>
 		<key>28EE8EA4-6933-4E8E-8414-789A1E8B383C</key>
 		<dict>
@@ -293,6 +337,11 @@
 		<dict>
 			<key>ypos</key>
 			<real>630</real>
+		</dict>
+		<key>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</key>
+		<dict>
+			<key>ypos</key>
+			<real>750</real>
 		</dict>
 		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
 		<dict>
