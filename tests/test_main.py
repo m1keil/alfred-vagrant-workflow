@@ -13,14 +13,14 @@ import workflow
 
 class Test(unittest.TestCase):
     def test_validate_version(self):
-        self.assertTrue(vagrantup._validate_version(1) is None)
-        self.assertRaises(Exception, vagrantup._validate_version, 0)
+        self.assertTrue(vagrantup.validate_version(1) is None)
+        self.assertRaises(Exception, vagrantup.validate_version, 0)
 
     def test_normalize_state(self):
         for states, output in commons.states.items():
             for state in states:
-                self.assertEqual(vagrantup._normalize_state(state), output)
-        self.assertEqual(vagrantup._normalize_state('bla'), 'unexpected')
+                self.assertEqual(vagrantup.normalize_state(state), output)
+        self.assertEqual(vagrantup.normalize_state('bla'), 'unexpected')
 
     def test_get_state_icon(self):
         providers = ['virtualbox', 'vmware_fusion']
@@ -28,34 +28,34 @@ class Test(unittest.TestCase):
 
         for provider in providers:
             for state in states:
-                icon_path = vagrantup._get_state_icon(state, provider)
+                icon_path = vagrantup.get_state_icon(state, provider)
                 icon_name = os.path.basename(icon_path)
                 self.assertFalse(icon_path is None)
                 self.assertEqual(icon_name.split('.')[-3], provider)
                 self.assertTrue(os.path.isfile(icon_path))
 
         for state in states:
-            icon_path = vagrantup._get_state_icon('unknown', state)
+            icon_path = vagrantup.get_state_icon('unknown', state)
             self.assertFalse(icon_path is None)
             self.assertTrue(os.path.isfile(icon_path))
 
         vagrantup.ICONS_STATES_PATH = os.getcwd()
-        self.assertTrue(vagrantup._get_state_icon('x', 'y') is None)
+        self.assertTrue(vagrantup.get_state_icon('x', 'y') is None)
 
     def test_get_action_icon(self):
         actions = ['destroy', 'halt', 'provision',
                    'rdp', 'resume', 'ssh', 'suspend', 'up']
         for action in actions:
-            icon_path = vagrantup._get_action_icon(action)
+            icon_path = vagrantup.get_action_icon(action)
             self.assertFalse(icon_path is None)
             self.assertTrue(os.path.isfile(icon_path))
 
-        self.assertTrue(vagrantup._get_action_icon('x') is None)
+        self.assertTrue(vagrantup.get_action_icon('x') is None)
 
     def test_list_actions(self):
         wf = workflow.Workflow()
         machines = generate_index()['machines']
-        vagrantup._list_machines(machines, wf)
+        vagrantup.list_machines(machines, wf)
         for item in wf._items:
             mid = item.arg
             meta = machines[mid]
@@ -65,6 +65,7 @@ class Test(unittest.TestCase):
             self.assertEqual(item.subtitle, meta['vagrantfile_path'])
             self.assertEqual(item.valid, True)
             self.assertFalse(item.icon, None)
+
 
 class TestVagrantHome(unittest.TestCase):
     def setUp(self):
@@ -77,12 +78,12 @@ class TestVagrantHome(unittest.TestCase):
 
     def test_get_machine_data_with_env(self):
         os.environ['VAGRANT_HOME'] = self.vagrant_home
-        index_data = vagrantup._get_machine_data()
+        index_data = vagrantup.get_machine_data()
         self.assertEqual(self.index_content['machines'], index_data)
 
     def test_get_machine_data(self):
         vagrantup.VAGRANT_HOME = self.vagrant_home
-        index_data = vagrantup._get_machine_data()
+        index_data = vagrantup.get_machine_data()
         self.assertEqual(self.index_content['machines'], index_data)
 
 
