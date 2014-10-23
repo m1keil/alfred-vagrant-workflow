@@ -2,7 +2,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from json import load
-from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS
+from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_WARNING
 from workflow.background import run_in_background, is_running
 from commons import run_alfred, send_notification, actions, states
 
@@ -115,6 +115,13 @@ def validate_version(version):
         raise Exception('Unsupported index version')
 
 
+def show_warning(title, subtitle, wf):
+    wf.add_item(title=title,
+                subtitle=subtitle,
+                icon=ICON_WARNING,
+                valid=False)
+
+
 def main(wf):
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -171,7 +178,10 @@ def main(wf):
         if eid is None:
             raise RuntimeError('No environment id cached')
         elif is_running(task_name):
-            raise Exception('Task in progress')
+            show_warning('Task in progress',
+                         'Please wait for previous task '
+                         'on this environment to finish',
+                         wf)
         else:
             list_actions(eid, wf)
     elif args.execute:
