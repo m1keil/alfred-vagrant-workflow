@@ -12,7 +12,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>060AECC5-1C73-405E-845E-3A924226C015</string>
+				<string>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -23,7 +23,15 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
+				<string>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</string>
+				<key>modifiers</key>
+				<integer>262144</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>1EBEED43-CEE9-4FE9-B30A-50815F169532</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -31,7 +39,7 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
-				<string>5E1C29D5-1F63-479B-A365-7910436A41BA</string>
+				<string>942FFFC4-1657-46C1-87F2-482BB48014DA</string>
 				<key>modifiers</key>
 				<integer>1048576</integer>
 				<key>modifiersubtext</key>
@@ -49,6 +57,17 @@
 				<string></string>
 			</dict>
 		</array>
+		<key>92AC2EFA-9E2B-428F-B522-CE49090797B0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>562C71D1-0EE3-40C1-85EC-A95459D0E542</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Michael Sverdlik</string>
@@ -60,6 +79,23 @@
 	<string>VagrantUP</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>python vagrantup.py --openenv {query}</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -100,9 +136,9 @@
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.output.script</string>
+			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</string>
+			<string>1EBEED43-CEE9-4FE9-B30A-50815F169532</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -117,9 +153,9 @@
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.output.script</string>
+			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>5E1C29D5-1F63-479B-A365-7910436A41BA</string>
+			<string>942FFFC4-1657-46C1-87F2-482BB48014DA</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -161,9 +197,9 @@
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.output.script</string>
+			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>060AECC5-1C73-405E-845E-3A924226C015</string>
+			<string>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -205,42 +241,85 @@
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>open_dir</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>92AC2EFA-9E2B-428F-B522-CE49090797B0</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>clear; cd {query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.terminalcommand</string>
+			<key>uid</key>
+			<string>562C71D1-0EE3-40C1-85EC-A95459D0E542</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string></string>
 	<key>uidata</key>
 	<dict>
-		<key>060AECC5-1C73-405E-845E-3A924226C015</key>
+		<key>1EBEED43-CEE9-4FE9-B30A-50815F169532</key>
 		<dict>
 			<key>ypos</key>
-			<real>270</real>
+			<real>140</real>
 		</dict>
 		<key>28EE8EA4-6933-4E8E-8414-789A1E8B383C</key>
 		<dict>
 			<key>ypos</key>
-			<real>270</real>
+			<real>390</real>
 		</dict>
-		<key>5E1C29D5-1F63-479B-A365-7910436A41BA</key>
+		<key>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</key>
 		<dict>
 			<key>ypos</key>
-			<real>150</real>
+			<real>20</real>
+		</dict>
+		<key>562C71D1-0EE3-40C1-85EC-A95459D0E542</key>
+		<dict>
+			<key>ypos</key>
+			<real>630</real>
 		</dict>
 		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
 		<dict>
 			<key>ypos</key>
-			<real>30</real>
+			<real>140</real>
 		</dict>
 		<key>7B0FCBA8-328C-47D0-93FE-724007AE7921</key>
 		<dict>
 			<key>ypos</key>
-			<real>390</real>
+			<real>510</real>
 		</dict>
-		<key>8AFF002F-5B3D-4FFC-9A52-3BD6671A69E1</key>
+		<key>92AC2EFA-9E2B-428F-B522-CE49090797B0</key>
 		<dict>
 			<key>ypos</key>
-			<real>30</real>
+			<real>630</real>
+		</dict>
+		<key>942FFFC4-1657-46C1-87F2-482BB48014DA</key>
+		<dict>
+			<key>ypos</key>
+			<real>260</real>
 		</dict>
 		<key>CE905952-EA9C-4579-AB7C-C832499CC41C</key>
+		<dict>
+			<key>ypos</key>
+			<real>510</real>
+		</dict>
+		<key>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</key>
 		<dict>
 			<key>ypos</key>
 			<real>390</real>

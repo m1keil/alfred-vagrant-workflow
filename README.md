@@ -8,6 +8,7 @@ A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control 
 * List existing Vagrant environments
 * Filter environments by name, provider, path
 * Execute actions on specific VM or whole environment
+* Open terminal in environment path
 
 ## Downloads & Install
 You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow).
@@ -34,6 +35,11 @@ Actions will vary depanding on the state of the machine. So if machine is stoppe
 It also possible to run commands on all of the machines in Vagrantfile (multi-machine environment). Just choose one machine from the environment and press enter while holding the Command key.
 
 **NOTE:** RDP & SSH actions are being executed by the terminal that is configured to handle the `.command` file extension.
+
+#### Open terminal in Vagrantfile's directory
+Choose machine from the list and press Enter while holding Ctrl key. 
+
+**NOTE:** This will open Alfred's default terminal app which is configured in Alfred's setting. 
 
 ## Screenshots:
 ![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")

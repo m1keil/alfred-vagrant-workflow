@@ -66,19 +66,33 @@ states = {
 }
 
 
-def send_notification(msg):
+def external_trigger(name, argument):
     """
-    Trigger external trigger in Alfred to send notification
-    Alfred is being used because we want to use Alfred's default notifications
-    (Growl or OSX native).
+    Call to external trigger in Alfred
     """
     call(['/usr/bin/osascript', '-e',
-          'tell application "Alfred 2" to run trigger "send_notification" '
+          'tell application "Alfred 2" to run trigger "{0}" '
           'in workflow "com.sverdlik.michael" '
-          'with argument "{0}"'.format(msg)])
+          'with argument "{1}"'.format(name, argument)])
+
+
+def send_notification(msg):
+    """
+    Trigger notification with msg as content
+    """
+    external_trigger('send_notification', msg)
+
+
+def open_terminal(path):
+    """
+    Trigger opening terminal and cd to path
+    """
+    external_trigger('open_dir', path)
 
 
 def run_alfred(action):
-    """Launch Alfred 2 via AppleScript and search for 'action'"""
+    """
+    Launch Alfred 2 via AppleScript and search for 'action'
+    """
     call(['/usr/bin/osascript', '-e',
           'tell application "Alfred 2" to search "{0}"'.format(action)])

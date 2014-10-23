@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from json import load
 from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_WARNING
 from workflow.background import run_in_background, is_running
-from commons import run_alfred, send_notification, actions, states
+from commons import run_alfred, actions, states, open_terminal
 
 logger = None
 VAGRANT_HOME = os.path.expanduser('~/.vagrant.d')
@@ -74,7 +74,10 @@ def get_search_key(machine):
 
 
 def list_machines(machines, wf):
-    subtitles_dict = {'cmd': 'Run commands on whole environment'}
+    subtitles_dict = {
+        'cmd': 'Run commands on whole environment',
+        'ctrl': 'Open directory in terminal',
+    }
 
     for mid, meta in machines.iteritems():
         wf.add_item(title=meta['name'],
@@ -139,6 +142,9 @@ def main(wf):
                        metavar='ENV_PATH',
                        help='Store %(metavar)s '
                             'to be retrived later as env dir')
+    group.add_argument('--openenv',
+                       metavar='ENV_PATH',
+                       help='Open %(metavar) in terminal')
     group.add_argument('--get',
                        action='store_true',
                        help='Get value which was previously stored')
@@ -167,6 +173,10 @@ def main(wf):
         logger.debug('saving id: {0}'.format(vagrant_dir))
         wf.cache_data('id', vagrant_dir)
         run_alfred(':vagrant-id')
+    elif args.openenv:
+        machine_data = get_machine_data()
+        vagrant_dir = machine_data[args.openenv]['vagrantfile_path']
+        open_terminal(vagrant_dir)
     elif args.get:
         eid = wf.cached_data('id', max_age=2)
         vpath = eid
