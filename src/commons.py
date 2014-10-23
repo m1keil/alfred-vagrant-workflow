@@ -1,7 +1,5 @@
 from subprocess import call
 
-# TODO: handle possible failiure of osascript
-
 # Dict contains all Vagrant actions this workflow supports and metadata:
 # ---
 # 'desc': description field showed in alfred
@@ -59,6 +57,7 @@ actions = {
     }
 }
 
+# Normalization dictionary
 states = {
     ('running', 'up', 'on'): 'running',
     ('paused', 'suspended', 'saved'): 'paused',
@@ -68,13 +67,18 @@ states = {
 
 
 def send_notification(msg):
-    call(['osascript', '-e',
+    """
+    Trigger external trigger in Alfred to send notification
+    Alfred is being used because we want to use Alfred's default notifications
+    (Growl or OSX native).
+    """
+    call(['/usr/bin/osascript', '-e',
           'tell application "Alfred 2" to run trigger "send_notification" '
           'in workflow "com.sverdlik.michael" '
-          'with argument "{}"'.format(msg)])
+          'with argument "{0}"'.format(msg)])
 
 
 def run_alfred(action):
     """Launch Alfred 2 via AppleScript and search for 'action'"""
-    call(['osascript', '-e',
-          'tell application "Alfred 2" to search "{}"'.format(action)])
+    call(['/usr/bin/osascript', '-e',
+          'tell application "Alfred 2" to search "{0}"'.format(action)])

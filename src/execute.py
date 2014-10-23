@@ -21,7 +21,7 @@ def main(wf):
         tmp = tempfile.mkstemp(suffix='.command')[1]
         os.chmod(tmp, 0700)
         with open(tmp, 'w') as f:
-            f.write('clear; vagrant {} {}'.format(action, env_id))
+            f.write('clear; vagrant {0} {1}'.format(action, env_id))
         command = ['open', tmp]
         show_notification = False
     else:
@@ -32,10 +32,10 @@ def main(wf):
     retcode = process.poll()
     message = 'finished succesfully'
     if retcode:
-        wf.logger.debug('execution failed:\n{}'.format(output))
+        wf.logger.debug('execution failed:\n{0}'.format(output))
         message = 'failed'
     if show_notification:
-        send_notification('{} {}'.format(action, message))
+        send_notification('{0} {1}'.format(action, message))
 
 
 if __name__ == '__main__':
