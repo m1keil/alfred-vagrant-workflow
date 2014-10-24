@@ -34,7 +34,7 @@ Actions will vary depending on the state of the machine. So if machine is stoppe
 
 It also possible to run commands on all of the machines in Vagrantfile (multi-machine environment). Just choose one machine from the environment and press enter while holding the Command key.
 
-**NOTE:** RDP & SSH actions are being executed by the terminal that is configured to handle the `.command` file extension.
+**NOTE:** RDP & SSH actions will open Alfred's default terminal app which is configured in Alfred's setting. 
 
 #### Open terminal in Vagrantfile's directory
 Choose machine from the list and press Enter while holding Shift key. 
