@@ -52,18 +52,18 @@ class Test(unittest.TestCase):
 
         self.assertTrue(vagrantup.get_action_icon('x') is None)
 
-    @unittest.skip('')
     def test_list_actions(self):
         wf = workflow.Workflow()
         machines = generate_index()['machines']
         vagrantup.list_machines(machines, wf)
         for item in wf._items:
-            mid = item.arg
+            mid, vagrantfile_path = item.arg.split(' ')
             meta = machines[mid]
-            self.assertTrue(item.arg in machines.keys())
+            self.assertTrue(mid in machines.keys())
             self.assertTrue(item.uid in machines.keys())
             self.assertEqual(item.title, meta['name'])
             self.assertEqual(item.subtitle, meta['vagrantfile_path'])
+            self.assertEqual(vagrantfile_path, meta['vagrantfile_path'])
             self.assertEqual(item.valid, True)
             self.assertFalse(item.icon, None)
 
