@@ -28,9 +28,9 @@ Filtering is done with [fuzzy search](http://en.wikipedia.org/wiki/Approximate_s
  - `vagrant default` - Will match any machines named `default` or any machines that `default` is part of their Vagrantfile path.
 
 #### Executing actions
-To execute Vagrant commands directly from Alfred just choose the machine and press Enter. You will get a list of possible actions for the choosen machine.
+To execute Vagrant commands directly from Alfred just choose the machine and press Enter. You will get a list of possible actions for the chosen machine.
 
-Actions will vary depanding on the state of the machine. So if machine is stopped, you cannot run provision for example.
+Actions will vary depending on the state of the machine. So if machine is stopped, you cannot run provision for example.
 
 It also possible to run commands on all of the machines in Vagrantfile (multi-machine environment). Just choose one machine from the environment and press enter while holding the Command key.
 
@@ -47,7 +47,7 @@ Choose machine from the list and press Enter while holding Shift key.
 ![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
 
 ## How does it work?
-Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` sub-command.
+Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` subcommand.
 This workflow utilize this command to get a list of current Vagrant environments.
 
-**Note:** Currently the implemantation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).
+**Note:** Currently the implementation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).
