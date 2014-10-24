@@ -113,7 +113,7 @@
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
-				<integer>100</integer>
+				<integer>108</integer>
 				<key>keyword</key>
 				<string>vagrant</string>
 				<key>runningsubtext</key>

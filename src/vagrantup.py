@@ -11,6 +11,7 @@ VAGRANT_HOME = os.path.expanduser('~/.vagrant.d')
 VAGRANT_INDEX = os.path.join('data', 'machine-index', 'index')
 ICONS_STATES_PATH = os.path.join(Workflow().workflowdir, 'icons', 'states')
 ICONS_ACTION_PATH = os.path.join(Workflow().workflowdir, 'icons', 'actions')
+MATCH_RULE = MATCH_ALL ^ MATCH_ALLCHARS
 
 
 def get_machine_data():
@@ -125,6 +126,66 @@ def show_warning(title, subtitle, wf):
                 valid=False)
 
 
+def do_list(args, wf):
+    machine_data = get_machine_data()
+    wf.cache_data('id', None)
+    if args.list:
+        machine_data = dict(wf.filter(query=args.list,
+                                      items=machine_data.items(),
+                                      key=get_search_key,
+                                      match_on=MATCH_RULE))
+    list_machines(machine_data, wf)
+
+
+def do_set(args, wf):
+    args.set.append(True)
+    logger.debug('saving id: {0}'.format(args.set))
+    wf.cache_data('id', args.set)
+    run_alfred(':vagrant-id ')
+
+
+def do_setenv(args, wf):
+    args.setenv.append(False)
+    logger.debug('saving id: {0}'.format(args.setenv))
+    wf.cache_data('id', args.setenv)
+    run_alfred(':vagrant-id ')
+
+
+def do_get(args, wf):
+    cached_data = wf.cached_data('id', max_age=0)
+    if cached_data is None:
+        raise RuntimeError('No environment id cached')
+    mid, vagrantfile_dir, flag = cached_data
+    logger.debug('retrieved mid: {0}\n'
+                 'vagrantfile_dir: {1}\n'
+                 'flag: {2}'.format(mid, vagrantfile_dir, flag))
+    task_name = 'exec_{0}'.format(hash(vagrantfile_dir))
+    if is_running(task_name):
+        show_warning('Task in progress',
+                     'Please wait for previous task '
+                     'on this environment to finish', wf)
+    else:
+        filtered_actions = actions
+        if args.get:
+            filtered_actions = dict(wf.filter(query=args.get,
+                                              items=actions.items(),
+                                              key=lambda action: action[0],
+                                              match_on=MATCH_RULE))
+        eid = mid if flag else vagrantfile_dir
+        list_actions(eid, filtered_actions, wf)
+
+
+def do_execute(args, wf):
+    machine_data = get_machine_data()
+    wf.cache_data('id', None)
+    vpath = args.execute[0]
+    if not os.path.isdir(vpath):
+        vpath = machine_data[args.execute[0]]['vagrantfile_path']
+    task_name = 'exec_{0}'.format(hash(vpath))
+    cmd = ['/usr/bin/python', 'execute.py'] + args.execute
+    run_in_background(task_name, cmd)
+
+
 def main(wf):
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -163,58 +224,18 @@ def main(wf):
     args = parser.parse_args(wf.args)
 
     if args.list is not None:
-        machine_data = get_machine_data()
-        wf.cache_data('id', None)
-        if args.list:
-            machine_data = dict(wf.filter(query=args.list,
-                                          items=machine_data.items(),
-                                          key=get_search_key,
-                                          match_on=MATCH_ALL ^ MATCH_ALLCHARS))
-        list_machines(machine_data, wf)
+        do_list(args, wf)
     elif args.set:
-        args.set.append(True)
-        logger.debug('saving id: {0}'.format(args.set))
-        wf.cache_data('id', args.set)
-        run_alfred(':vagrant-id ')
+        do_set(args, wf)
     elif args.setenv:
-        args.setenv.append(False)
-        logger.debug('saving id: {0}'.format(args.setenv))
-        wf.cache_data('id', args.setenv)
-        run_alfred(':vagrant-id ')
+        do_setenv(args, wf)
     elif args.openenv:
         vagrantfile_dir = args.openenv[1]
         open_terminal(vagrantfile_dir)
     elif args.get is not None:
-        cached_data = wf.cached_data('id', max_age=0)
-        if cached_data is None:
-            raise RuntimeError('No environment id cached')
-        mid, vagrantfile_dir, flag = cached_data
-        logger.debug('retrieved mid: {0}\n'
-                     'vagrantfile_dir: {1}\n'
-                     'flag: {2}'.format(mid, vagrantfile_dir, flag))
-        task_name = 'exec_{0}'.format(hash(vagrantfile_dir))
-        if is_running(task_name):
-            show_warning('Task in progress',
-                         'Please wait for previous task '
-                         'on this environment to finish', wf)
-        else:
-            filtered_actions = actions
-            if args.get:
-                filtered_actions = dict(wf.filter(query=args.get,
-                                        items=actions.items(),
-                                        key=lambda action: action[0],
-                                        match_on=MATCH_ALL ^ MATCH_ALLCHARS))
-            eid = mid if flag else vagrantfile_dir
-            list_actions(eid, filtered_actions, wf)
+        do_get(args, wf)
     elif args.execute:
-        machine_data = get_machine_data()
-        wf.cache_data('id', None)
-        vpath = args.execute[0]
-        if not os.path.isdir(vpath):
-            vpath = machine_data[args.execute[0]]['vagrantfile_path']
-        task_name = 'exec_{0}'.format(hash(vpath))
-        cmd = ['/usr/bin/python', 'execute.py'] + args.execute
-        run_in_background(task_name, cmd)
+        do_execute(args, wf)
 
     wf.send_feedback()
 
