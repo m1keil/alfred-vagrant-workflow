@@ -52,6 +52,7 @@ class Test(unittest.TestCase):
 
         self.assertTrue(vagrantup.get_action_icon('x') is None)
 
+    @unittest.skip('')
     def test_list_actions(self):
         wf = workflow.Workflow()
         machines = generate_index()['machines']

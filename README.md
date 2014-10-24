@@ -37,7 +37,7 @@ It also possible to run commands on all of the machines in Vagrantfile (multi-ma
 **NOTE:** RDP & SSH actions are being executed by the terminal that is configured to handle the `.command` file extension.
 
 #### Open terminal in Vagrantfile's directory
-Choose machine from the list and press Enter while holding Ctrl key. 
+Choose machine from the list and press Enter while holding Shift key. 
 
 **NOTE:** This will open Alfred's default terminal app which is configured in Alfred's setting. 
 

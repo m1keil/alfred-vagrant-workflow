@@ -76,14 +76,14 @@ def get_search_key(machine):
 def list_machines(machines, wf):
     subtitles_dict = {
         'cmd': 'Run commands on whole environment',
-        'ctrl': 'Open directory in terminal',
+        'shift': 'Open directory in terminal',
     }
 
     for mid, meta in machines.iteritems():
         wf.add_item(title=meta['name'],
                     subtitle=meta['vagrantfile_path'],
                     modifier_subtitles=subtitles_dict,
-                    arg=mid,
+                    arg='{0} {1}'.format(mid, meta['vagrantfile_path']),
                     uid=mid,
                     valid=True,
                     icon=get_state_icon(meta['state'], meta['provider']))
@@ -136,13 +136,16 @@ def main(wf):
                             'If %(metavar)s is provided, will filter results '
                             'by fuzzy searching')
     group.add_argument('--set',
+                       nargs=2,
                        metavar='MACHINE_ID',
                        help='Store %(metavar)s to be retrived later')
     group.add_argument('--setenv',
+                       nargs=2,
                        metavar='ENV_PATH',
                        help='Store %(metavar)s '
                             'to be retrived later as env dir')
     group.add_argument('--openenv',
+                       nargs=2,
                        metavar='ENV_PATH',
                        help='Open %(metavar) in terminal')
     group.add_argument('--get',
@@ -164,35 +167,33 @@ def main(wf):
                                           match_on=MATCH_ALL ^ MATCH_ALLCHARS))
         list_machines(machine_data, wf)
     elif args.set:
+        args.set.append(True)
         logger.debug('saving id: {0}'.format(args.set))
         wf.cache_data('id', args.set)
         run_alfred(':vagrant-id')
     elif args.setenv:
-        machine_data = get_machine_data()
-        vagrant_dir = machine_data[args.setenv]['vagrantfile_path']
-        logger.debug('saving id: {0}'.format(vagrant_dir))
-        wf.cache_data('id', vagrant_dir)
+        args.setenv.append(False)
+        logger.debug('saving id: {0}'.format(args.setenv))
+        wf.cache_data('id', args.setenv)
         run_alfred(':vagrant-id')
     elif args.openenv:
-        machine_data = get_machine_data()
-        vagrant_dir = machine_data[args.openenv]['vagrantfile_path']
-        open_terminal(vagrant_dir)
+        vagrantfile_dir = args.openenv[1]
+        open_terminal(vagrantfile_dir)
     elif args.get:
-        eid = wf.cached_data('id', max_age=2)
-        vpath = eid
-        if not os.path.isdir(eid):
-            machine_data = get_machine_data()
-            vpath = machine_data[eid]['vagrantfile_path']
-        task_name = 'exec_{0}'.format(hash(vpath))
-        logger.debug('retrieved id: {0}'.format(eid))
-        if eid is None:
+        cached_data = wf.cached_data('id', max_age=2)
+        if cached_data is None:
             raise RuntimeError('No environment id cached')
-        elif is_running(task_name):
+        mid, vagrantfile_dir, flag = cached_data
+        logger.debug('retrieved mid: {0}\n'
+                     'vagrantfile_dir: {1}\n'
+                     'flag: {2}'.format(mid, vagrantfile_dir, flag))
+        task_name = 'exec_{0}'.format(hash(vagrantfile_dir))
+        if is_running(task_name):
             show_warning('Task in progress',
                          'Please wait for previous task '
                          'on this environment to finish', wf)
         else:
-            list_actions(eid, wf)
+            list_actions(mid if flag else vagrantfile_dir, wf)
     elif args.execute:
         machine_data = get_machine_data()
         vpath = args.execute[0]
