@@ -11,7 +11,7 @@ A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control 
 * Open terminal in environment path
 
 ## Downloads & Install
-You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/raw/master/bundle/vagrantup.alfredworkflow).
+You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/releases).
 
 To install workflow, simply double click the file you just downloaded. For additional instructions about installing workflows, check [Alfred's support](http://support.alfredapp.com/workflows:installing).
 
