@@ -89,7 +89,7 @@ def list_machines(machines, wf):
                     icon=get_state_icon(meta['state'], meta['provider']))
 
 
-def list_actions(eid, wf):
+def list_actions(eid, filtered_actions, wf):
     if os.path.isdir(eid):
         def test(info):
             return not info['dir_action']
@@ -101,7 +101,7 @@ def list_actions(eid, wf):
         def test(info):
             return norm_state not in info['state']
 
-    for action, prop in actions.iteritems():
+    for action, prop in filtered_actions.iteritems():
         if test(prop):
             continue
         wf.add_item(title=action,
@@ -149,8 +149,12 @@ def main(wf):
                        metavar='ENV_PATH',
                        help='Open %(metavar) in terminal')
     group.add_argument('--get',
-                       action='store_true',
-                       help='Get value which was previously stored')
+                       nargs='?',
+                       const='',
+                       metavar='FILTER',
+                       help='Get actions for previously stored machine id or '
+                            'environment path. If %(metavar) is provided, will'
+                            'filter actions by fuzzy searching')
     group.add_argument('--execute',
                        nargs=2,
                        metavar=('ID', 'COMMAND'),
@@ -160,6 +164,7 @@ def main(wf):
 
     if args.list is not None:
         machine_data = get_machine_data()
+        wf.cache_data('id', None)
         if args.list:
             machine_data = dict(wf.filter(query=args.list,
                                           items=machine_data.items(),
@@ -170,17 +175,17 @@ def main(wf):
         args.set.append(True)
         logger.debug('saving id: {0}'.format(args.set))
         wf.cache_data('id', args.set)
-        run_alfred(':vagrant-id')
+        run_alfred(':vagrant-id ')
     elif args.setenv:
         args.setenv.append(False)
         logger.debug('saving id: {0}'.format(args.setenv))
         wf.cache_data('id', args.setenv)
-        run_alfred(':vagrant-id')
+        run_alfred(':vagrant-id ')
     elif args.openenv:
         vagrantfile_dir = args.openenv[1]
         open_terminal(vagrantfile_dir)
-    elif args.get:
-        cached_data = wf.cached_data('id', max_age=2)
+    elif args.get is not None:
+        cached_data = wf.cached_data('id', max_age=0)
         if cached_data is None:
             raise RuntimeError('No environment id cached')
         mid, vagrantfile_dir, flag = cached_data
@@ -193,9 +198,17 @@ def main(wf):
                          'Please wait for previous task '
                          'on this environment to finish', wf)
         else:
-            list_actions(mid if flag else vagrantfile_dir, wf)
+            filtered_actions = actions
+            if args.get:
+                filtered_actions = dict(wf.filter(query=args.get,
+                                        items=actions.items(),
+                                        key=lambda action: action[0],
+                                        match_on=MATCH_ALL ^ MATCH_ALLCHARS))
+            eid = mid if flag else vagrantfile_dir
+            list_actions(eid, filtered_actions, wf)
     elif args.execute:
         machine_data = get_machine_data()
+        wf.cache_data('id', None)
         vpath = args.execute[0]
         if not os.path.isdir(vpath):
             vpath = machine_data[args.execute[0]]['vagrantfile_path']

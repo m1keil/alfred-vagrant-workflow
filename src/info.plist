@@ -180,7 +180,7 @@
 				<key>keyword</key>
 				<string>:vagrant-id</string>
 				<key>script</key>
-				<string>python vagrantup.py --get</string>
+				<string>python vagrantup.py --get {query}</string>
 				<key>subtext</key>
 				<string>Actions on Vagrant environment</string>
 				<key>title</key>
