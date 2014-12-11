@@ -50,4 +50,4 @@ Choose machine from the list and press Enter while holding Shift key.
 Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` subcommand.
 This workflow utilize this command to get a list of current Vagrant environments.
 
-**Note:** Currently the implementation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).
+**Note:** ~~Currently the implementation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).~~ Vagrant 1.7 seems to fix a lot of issues related to global status.
