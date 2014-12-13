@@ -129,12 +129,18 @@ def show_warning(title, subtitle, wf):
 def do_list(args, wf):
     machine_data = get_machine_data()
     wf.cache_data('id', None)
-    if args.list:
-        machine_data = dict(wf.filter(query=args.list,
-                                      items=machine_data.items(),
-                                      key=get_search_key,
-                                      match_on=MATCH_RULE))
-    list_machines(machine_data, wf)
+    if len(machine_data) == 0:
+        wf.add_item(title='No active Vagrant environments',
+                    subtitle='',
+                    valid=False,
+                    icon=ICON_WARNING)
+    else:
+        if args.list:
+            machine_data = dict(wf.filter(query=args.list,
+                                          items=machine_data.items(),
+                                          key=get_search_key,
+                                          match_on=MATCH_RULE))
+        list_machines(machine_data, wf)
 
 
 def do_set(args, wf):

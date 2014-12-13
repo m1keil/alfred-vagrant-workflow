@@ -67,6 +67,16 @@ class Test(unittest.TestCase):
             self.assertEqual(item.valid, True)
             self.assertFalse(item.icon, None)
 
+    def test_empty_machine_index(self):
+        wf = workflow.Workflow()
+        # machines = generate_index(0)['machines']
+        old_get = vagrantup.get_machine_data
+        vagrantup.get_machine_data = lambda: generate_index(0)['machines']
+        vagrantup.do_list([], wf)
+        vagrantup.get_machine_data = old_get
+        self.assertEqual(len(wf._items), 1)
+        self.assertEqual(wf._items[0].valid, False)
+
 
 class TestVagrantHome(unittest.TestCase):
     def setUp(self):
