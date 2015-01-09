@@ -1,7 +1,7 @@
 import os
 import sys
+import json
 from argparse import ArgumentParser
-from json import load
 from workflow import Workflow, MATCH_ALL, MATCH_ALLCHARS, ICON_WARNING
 from workflow.background import run_in_background, is_running
 from commons import run_alfred, actions, states, open_terminal
@@ -15,17 +15,20 @@ MATCH_RULE = MATCH_ALL ^ MATCH_ALLCHARS
 
 
 def get_machine_data():
+    """
+    Return 'machines' object from Vagrant data index
+    """
     vagrant_home = os.environ.get('VAGRANT_HOME', VAGRANT_HOME)
     index_path = os.path.join(vagrant_home, VAGRANT_INDEX)
     with open(index_path) as index:
-        data = load(index)
+        data = json.load(index)
     validate_version(data['version'])
     return data['machines']
 
 
 def get_state_icon(state, provider):
     """
-    Return appropriate icon path for state
+    Return icon path for state
     """
     norm_state = normalize_state(state)
     icon = os.path.join(ICONS_STATES_PATH,
@@ -54,7 +57,10 @@ def get_action_icon(action):
 
 def normalize_state(state):
     """
-    Normalize environment state
+    Normalize environment state.
+
+    Different providers return different status strings about VMs:
+    A running state can be - 'up', 'running', 'on' and so on.
     """
     for states_tup, output in states.iteritems():
         if state in states_tup:
@@ -115,8 +121,12 @@ def list_actions(eid, filtered_actions, wf):
 
 
 def validate_version(version):
+    """
+    Vagrant data index might change format in the future
+    """
     if version != 1:
-        raise Exception('Unsupported index version')
+        raise Exception('Unsupported index version - This Workflow doesn\'t '
+                        'support your Vagrant version')
 
 
 def show_warning(title, subtitle, wf):
@@ -135,25 +145,18 @@ def do_list(args, wf):
                     valid=False,
                     icon=ICON_WARNING)
     else:
-        if args.list:
-            machine_data = dict(wf.filter(query=args.list,
+        if args:
+            machine_data = dict(wf.filter(query=args,
                                           items=machine_data.items(),
                                           key=get_search_key,
                                           match_on=MATCH_RULE))
         list_machines(machine_data, wf)
 
 
-def do_set(args, wf):
-    args.set.append(True)
-    logger.debug('saving id: {0}'.format(args.set))
-    wf.cache_data('id', args.set)
-    run_alfred(':vagrant-id ')
-
-
-def do_setenv(args, wf):
-    args.setenv.append(False)
-    logger.debug('saving id: {0}'.format(args.setenv))
-    wf.cache_data('id', args.setenv)
+def do_set(args, wf, is_machine):
+    args.append(is_machine)
+    logger.debug('saving id: {0}'.format(args))
+    wf.cache_data('id', args)
     run_alfred(':vagrant-id ')
 
 
@@ -172,8 +175,8 @@ def do_get(args, wf):
                      'on this environment to finish', wf)
     else:
         filtered_actions = actions
-        if args.get:
-            filtered_actions = dict(wf.filter(query=args.get,
+        if args:
+            filtered_actions = dict(wf.filter(query=args,
                                               items=actions.items(),
                                               key=lambda action: action[0],
                                               match_on=MATCH_RULE))
@@ -184,11 +187,11 @@ def do_get(args, wf):
 def do_execute(args, wf):
     machine_data = get_machine_data()
     wf.cache_data('id', None)
-    vpath = args.execute[0]
+    vpath = args[0]
     if not os.path.isdir(vpath):
-        vpath = machine_data[args.execute[0]]['vagrantfile_path']
+        vpath = machine_data[args[0]]['vagrantfile_path']
     task_name = 'exec_{0}'.format(hash(vpath))
-    cmd = ['/usr/bin/python', 'execute.py'] + args.execute
+    cmd = ['/usr/bin/python', 'execute.py'] + args
     run_in_background(task_name, cmd)
 
 
@@ -204,7 +207,7 @@ def main(wf):
                             'by fuzzy searching')
     group.add_argument('--set',
                        nargs=2,
-                       metavar='MACHINE_ID',
+                       metavar=('MACHINE_ID', 'ENV_PATH'),
                        help='Store %(metavar)s to be retrived later')
     group.add_argument('--setenv',
                        nargs=2,
@@ -214,13 +217,13 @@ def main(wf):
     group.add_argument('--openenv',
                        nargs=2,
                        metavar='ENV_PATH',
-                       help='Open %(metavar) in terminal')
+                       help='Open %(metavar)s in terminal')
     group.add_argument('--get',
                        nargs='?',
                        const='',
                        metavar='FILTER',
                        help='Get actions for previously stored machine id or '
-                            'environment path. If %(metavar) is provided, will'
+                            'environment path. If %(metavar)s is provided, will'
                             'filter actions by fuzzy searching')
     group.add_argument('--execute',
                        nargs=2,
@@ -230,18 +233,18 @@ def main(wf):
     args = parser.parse_args(wf.args)
 
     if args.list is not None:
-        do_list(args, wf)
+        do_list(args.list, wf)
     elif args.set:
-        do_set(args, wf)
+        do_set(args.set, wf, True)
     elif args.setenv:
-        do_setenv(args, wf)
+        do_set(args.setenv, wf, False)
     elif args.openenv:
         vagrantfile_dir = args.openenv[1]
         open_terminal(vagrantfile_dir)
     elif args.get is not None:
-        do_get(args, wf)
+        do_get(args.get, wf)
     elif args.execute:
-        do_execute(args, wf)
+        do_execute(args.execute, wf)
 
     wf.send_feedback()
 
