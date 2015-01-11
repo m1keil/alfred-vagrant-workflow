@@ -195,7 +195,7 @@ def do_execute(args, wf):
     run_in_background(task_name, cmd)
 
 
-def main(wf):
+def get_parser():
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--list',
@@ -208,28 +208,35 @@ def main(wf):
     group.add_argument('--set',
                        nargs=2,
                        metavar=('MACHINE_ID', 'ENV_PATH'),
-                       help='Store %(metavar)s to be retrived later')
+                       help='Store %(metavar)s to be retrived later by --get '
+                            'or --execute. Will be retrived later as machine.')
     group.add_argument('--setenv',
                        nargs=2,
-                       metavar='ENV_PATH',
-                       help='Store %(metavar)s '
-                            'to be retrived later as env dir')
+                       metavar=('MACHINE_ID', 'ENV_PATH'),
+                       help='Store %(metavar)s to be retrived later by --get '
+                            'or --execute. Will be retrived later as '
+                            'environment')
     group.add_argument('--openenv',
                        nargs=2,
-                       metavar='ENV_PATH',
-                       help='Open %(metavar)s in terminal')
+                       metavar=('MACHINE_ID', 'ENV_PATH'),
+                       help='Open ENV_PATH in terminal')
     group.add_argument('--get',
                        nargs='?',
                        const='',
                        metavar='FILTER',
                        help='Get actions for previously stored machine id or '
-                            'environment path. If %(metavar)s is provided, will'
-                            'filter actions by fuzzy searching')
+                            'environment path. If %(metavar)s is provided, '
+                            'will filter actions by fuzzy searching')
     group.add_argument('--execute',
                        nargs=2,
                        metavar=('ID', 'COMMAND'),
-                       help='Execute command on specific VM or entire'
-                            ' environment in the background')
+                       help='Execute command on specific VM or entire '
+                            'environment in the background')
+    return parser
+
+
+def main(wf):
+    parser = get_parser()
     args = parser.parse_args(wf.args)
 
     if args.list is not None:
