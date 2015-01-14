@@ -87,12 +87,15 @@ def list_machines(machines, wf):
     }
 
     for mid, meta in machines.iteritems():
+        validity = True
+        if normalize_state(meta['state']) == 'unexpected':
+            validity = False
         wf.add_item(title=meta['name'],
                     subtitle=meta['vagrantfile_path'],
                     modifier_subtitles=subtitles_dict,
                     arg='{0} {1}'.format(mid, meta['vagrantfile_path']),
                     uid=mid,
-                    valid=True,
+                    valid=validity,
                     icon=get_state_icon(meta['state'], meta['provider']))
 
 
