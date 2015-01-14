@@ -69,7 +69,6 @@ class Test(unittest.TestCase):
 
     def test_empty_machine_index(self):
         wf = workflow.Workflow()
-        # machines = generate_index(0)['machines']
         old_get = vagrantup.get_machine_data
         vagrantup.get_machine_data = lambda: generate_index(0)['machines']
         vagrantup.do_list([], wf)
@@ -96,6 +95,20 @@ class TestVagrantHome(unittest.TestCase):
         vagrantup.VAGRANT_HOME = self.vagrant_home
         index_data = vagrantup.get_machine_data()
         self.assertEqual(self.index_content['machines'], index_data)
+
+
+class TestCommandLine(unittest.TestCase):
+    def setUp(self):
+        parser = vagrantup.get_parser()
+        self.parser = parser
+
+    def test_with_empty_args(self):
+        with self.assertRaises(SystemExit):
+            self.parser.parse_args([])
+
+    def test_with_help_args(self):
+        with self.assertRaises(SystemExit):
+            self.parser.parse_args(['--help'])
 
 
 def create_vagrant_home(index_content):
