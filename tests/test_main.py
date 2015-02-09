@@ -76,6 +76,14 @@ class Test(unittest.TestCase):
         self.assertEqual(len(wf._items), 1)
         self.assertEqual(wf._items[0].valid, False)
 
+    def test_get_search_key(self):
+        machine = generate_machine().items()[0]
+        meta = machine[1]
+        self.assertEqual(' '.join([meta['name'],
+                                   meta['vagrantfile_path'],
+                                   meta['provider']]),
+                         vagrantup.get_search_key(machine))
+
 
 class TestVagrantHome(unittest.TestCase):
     def setUp(self):
