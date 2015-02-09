@@ -1,8 +1,7 @@
 # VagrantUP
+[![Build Status](https://travis-ci.org/m1keil/alfred-vagrant-workflow.svg?branch=master)](https://travis-ci.org/m1keil/alfred-vagrant-workflow) [![Coverage Status](https://coveralls.io/repos/m1keil/alfred-vagrant-workflow/badge.svg)](https://coveralls.io/r/m1keil/alfred-vagrant-workflow)
 
 A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control over [Vagrant](vagrantup.com).
-
-[![Build Status](https://travis-ci.org/m1keil/alfred-vagrant-workflow.svg?branch=master)](https://travis-ci.org/m1keil/alfred-vagrant-workflow)
 
 ## Functionality
 * List existing Vagrant environments

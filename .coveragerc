@@ -1,0 +1,5 @@
+[run]
+include = src/*
+omit =
+    src/argparse.py
+    src/workflow/*
