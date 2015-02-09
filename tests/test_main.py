@@ -103,12 +103,10 @@ class TestCommandLine(unittest.TestCase):
         self.parser = parser
 
     def test_with_empty_args(self):
-        with self.assertRaises(SystemExit):
-            self.parser.parse_args([])
+        self.assertRaises(SystemExit, self.parser.parse_args, [])
 
     def test_with_help_args(self):
-        with self.assertRaises(SystemExit):
-            self.parser.parse_args(['--help'])
+        self.assertRaises(SystemExit, self.parser.parse_args, ['--help'])
 
 
 def create_vagrant_home(index_content):
