@@ -52,7 +52,7 @@ class Test(unittest.TestCase):
 
         self.assertTrue(vagrantup.get_action_icon('x') is None)
 
-    def test_list_actions(self):
+    def test_list_machines(self):
         wf = workflow.Workflow()
         machines = generate_index()['machines']
         vagrantup.list_machines(machines, wf)
