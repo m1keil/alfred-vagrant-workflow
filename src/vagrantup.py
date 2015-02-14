@@ -114,11 +114,16 @@ def list_actions(eid, filtered_actions, wf):
     for action, prop in filtered_actions.iteritems():
         if test(prop):
             continue
+
+        if prop['flags']:
+            arg = "{0} '{1} {2}'".format(eid, action, prop['flags'])
+        else:
+            arg = '{0} {1}'.format(eid, action)
+
         wf.add_item(title=action,
                     subtitle=prop['desc'],
                     uid=action,
-                    arg='{0} {1!r}'.format(
-                        eid, ' '.join([action, prop['flags'] or ''])),
+                    arg=arg,
                     icon=get_action_icon(action),
                     valid=True)
 
