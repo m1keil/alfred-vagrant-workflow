@@ -34,7 +34,6 @@ class Test(unittest.TestCase):
         message = parse_process_output(process)
         self.assertEqual(message, 'finished succesfully')
 
-
     def test_parse_process_output_without_err(self):
         process = mock.MagicMock(spec=Popen)
         process.communicate.return_value = (None, None)
