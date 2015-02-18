@@ -26,17 +26,16 @@ class Test(unittest.TestCase):
                                 stderr=-1,
                                 stdout=-1)
 
-    @mock.patch('Workflow.logger.debug', )
-    def test_parse_process_output_with_err(self):
+    @mock.patch('execute.logger')
+    def test_parse_process_output(self, mock_logger):
         process = mock.MagicMock(spec=Popen)
         process.communicate.return_value = (None, None)
         process.poll.return_value = 0
         message = parse_process_output(process)
+        mock_logger.debug.assert_called_once_with('exec output:\nstdout:'
+                                                  ' None\nstderrNone')
         self.assertEqual(message, 'finished succesfully')
 
-    def test_parse_process_output_without_err(self):
-        process = mock.MagicMock(spec=Popen)
-        process.communicate.return_value = (None, None)
         process.poll.return_value = -1
         message = parse_process_output(process)
         self.assertEqual(message, 'failed')
