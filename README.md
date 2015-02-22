@@ -29,9 +29,9 @@ Filtering is done with [fuzzy search](http://en.wikipedia.org/wiki/Approximate_s
 #### Executing actions
 To execute Vagrant commands directly from Alfred just choose the machine and press Enter. You will get a list of possible actions for the chosen machine.
 
-Actions will vary depending on the state of the machine. So if machine is stopped, you cannot run provision for example.
+Actions will vary depending on the state of the machine. For example, if machine is stopped, you cannot run provision.
 
-It also possible to run commands on all of the machines in Vagrantfile (multi-machine environment). Just choose one machine from the environment and press enter while holding the Command key.
+It also possible to run commands on [multi machine Vagrantfile](https://docs.vagrantup.com/v2/multi-machine/index.html). Just choose one VM from the environment and press enter while holding the Command key.
 
 **NOTE:** RDP & SSH actions will open Alfred's default terminal app which is configured in Alfred's setting. 
 
@@ -41,6 +41,7 @@ Choose machine from the list and press Enter while holding Shift key.
 **NOTE:** This will open Alfred's default terminal app which is configured in Alfred's setting. 
 
 ## Screenshots:
+![Screenshot](screenshots/demo.gif?raw=true "Vagrant global-status")
 ![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
 ![Screenshot](screenshots/machine-actions.jpg?raw=true "Vagrant actions")
 ![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
