@@ -90,11 +90,11 @@ def open_terminal(path):
     external_trigger('open_dir', path)
 
 
-def run_vagrant(args):
+def run_vagrant(arg):
     """
     Trigger running Vagrant in terminal
     """
-    external_trigger('run_vagrant', args)
+    external_trigger('run_vagrant', arg)
 
 
 def run_alfred(action):
