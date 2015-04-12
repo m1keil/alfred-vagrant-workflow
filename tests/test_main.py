@@ -1,4 +1,5 @@
 import os
+import mock
 import string
 import random
 import unittest
@@ -83,6 +84,23 @@ class Test(unittest.TestCase):
                                    meta['vagrantfile_path'],
                                    meta['provider']]),
                          vagrantup.get_search_key(machine))
+
+    def test_show_warning(self):
+        mock_wf = mock.MagicMock()
+        vagrantup.show_warning('title', 'subtitle', mock_wf)
+        mock_wf.add_item.assert_called_once_with(title='title',
+                                                 subtitle='subtitle',
+                                                 icon=vagrantup.ICON_WARNING,
+                                                 valid=False)
+
+    @mock.patch('vagrantup.logger')
+    @mock.patch('vagrantup.run_alfred')
+    def test_do_set(self, mock_run_alfred, moch):
+        mock_wf = mock.MagicMock()
+        mock_args = []
+        vagrantup.do_set(mock_args, mock_wf, 'test')
+        mock_wf.cache_data.assert_called_once_with('id', mock_args)
+        mock_run_alfred.assert_called_once_with(':vagrant-id ')
 
 
 class TestVagrantHome(unittest.TestCase):

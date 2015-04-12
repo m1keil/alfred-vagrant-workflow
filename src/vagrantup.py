@@ -81,6 +81,9 @@ def get_search_key(machine):
 
 
 def list_machines(machines, wf):
+    """
+    Parse and add each machine to workflow output
+    """
     subtitles_dict = {
         'cmd': 'Run commands on whole environment',
         'shift': 'Open directory in terminal',
@@ -99,20 +102,31 @@ def list_machines(machines, wf):
                     icon=get_state_icon(meta['state'], meta['provider']))
 
 
-def list_actions(eid, filtered_actions, wf):
+def get_test(eid):
+    """
+    Return test function
+    """
     if os.path.isdir(eid):
         def test(info):
-            return not info['dir_action']
+            return info['dir_action']
     else:
         machine_data = get_machine_data()
         state = normalize_state(machine_data[eid]['state'])
         norm_state = normalize_state(state)
 
         def test(info):
-            return norm_state not in info['state']
+            return norm_state in info['state']
+    return test
+
+
+def list_actions(eid, filtered_actions, wf):
+    """
+    Parse and add suitable action to workflow
+    """
+    relevant = get_test(eid)
 
     for action, prop in filtered_actions.iteritems():
-        if test(prop):
+        if not relevant(prop):
             continue
 
         if prop['flags']:
@@ -138,6 +152,9 @@ def validate_version(version):
 
 
 def show_warning(title, subtitle, wf):
+    """
+    Add warning message in workflow output
+    """
     wf.add_item(title=title,
                 subtitle=subtitle,
                 icon=ICON_WARNING,
@@ -145,6 +162,9 @@ def show_warning(title, subtitle, wf):
 
 
 def do_list(args, wf):
+    """
+    List Vagrant environments
+    """
     machine_data = get_machine_data()
     wf.cache_data('id', None)
     if len(machine_data) == 0:
@@ -162,6 +182,9 @@ def do_list(args, wf):
 
 
 def do_set(args, wf, is_machine):
+    """
+    Cache environment to be retrived later
+    """
     args.append(is_machine)
     logger.debug('saving id: {0}'.format(args))
     wf.cache_data('id', args)
@@ -169,6 +192,9 @@ def do_set(args, wf, is_machine):
 
 
 def do_get(args, wf):
+    """
+    Retrive cached environment and show actions
+    """
     cached_data = wf.cached_data('id', max_age=0)
     if cached_data is None:
         raise RuntimeError('No environment id cached')
@@ -193,6 +219,9 @@ def do_get(args, wf):
 
 
 def do_execute(args, wf):
+    """
+    Execute task in background
+    """
     machine_data = get_machine_data()
     wf.cache_data('id', None)
     vpath = args[0]
@@ -204,6 +233,9 @@ def do_execute(args, wf):
 
 
 def get_parser():
+    """
+    Parse command line argument and return parser object
+    """
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--list',
@@ -244,6 +276,9 @@ def get_parser():
 
 
 def main(wf):
+    """
+    Main program entry point
+    """
     parser = get_parser()
     args = parser.parse_args(wf.args)
 
