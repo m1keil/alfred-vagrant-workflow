@@ -1,4 +1,5 @@
 .idea/
 *.pyc
+*.iml
 .tox/
 .coverage
