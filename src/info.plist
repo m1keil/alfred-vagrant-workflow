@@ -4,45 +4,13 @@
 <dict>
 	<key>bundleid</key>
 	<string>com.sverdlik.michael</string>
-	<key>category</key>
-	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>28EE8EA4-6933-4E8E-8414-789A1E8B383C</key>
+		<key>51FBDBDC-00D2-47AF-8220-033DF6DDE63C</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-			</dict>
-		</array>
-		<key>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>23A94193-5343-4AAE-8D69-16D55991EA8B</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-			</dict>
-		</array>
-		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</string>
-				<key>modifiers</key>
-				<integer>131072</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-			</dict>
-			<dict>
-				<key>destinationuid</key>
-				<string>1EBEED43-CEE9-4FE9-B30A-50815F169532</string>
+				<string>0C730F61-1CAC-4DE8-80D3-334F826497C8</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -50,29 +18,29 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
-				<string>942FFFC4-1657-46C1-87F2-482BB48014DA</string>
+				<string>E3FAB9B5-2CD6-4138-941D-2C0616C8D7F4</string>
 				<key>modifiers</key>
 				<integer>1048576</integer>
 				<key>modifiersubtext</key>
 				<string></string>
 			</dict>
 		</array>
-		<key>7B0FCBA8-328C-47D0-93FE-724007AE7921</key>
+		<key>A61FF101-9C27-41CB-88B3-BDDCF17EEFC5</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>CE905952-EA9C-4579-AB7C-C832499CC41C</string>
+				<string>BBFC6352-C982-4965-978B-CE120119E021</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
 			</dict>
 		</array>
-		<key>92AC2EFA-9E2B-428F-B522-CE49090797B0</key>
+		<key>A7439BA6-7126-4350-9302-E969C163AA89</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>562C71D1-0EE3-40C1-85EC-A95459D0E542</string>
+				<string>2CB3B3C6-06C2-45BD-9010-D5A83EC4440B</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -93,17 +61,19 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
-				<integer>0</integer>
+				<integer>102</integer>
 				<key>script</key>
-				<string>python vagrantup.py --openenv {query}</string>
+				<string>python vagrantup.py --execute {query}</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.script</string>
+			<string>alfred.workflow.output.script</string>
 			<key>uid</key>
-			<string>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</string>
+			<string>0C730F61-1CAC-4DE8-80D3-334F826497C8</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -117,21 +87,21 @@
 				<key>keyword</key>
 				<string>vagrant</string>
 				<key>queuedelaycustom</key>
-				<integer>1</integer>
+				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
-				<false/>
+				<true/>
 				<key>queuedelaymode</key>
 				<integer>0</integer>
 				<key>queuemode</key>
 				<integer>1</integer>
 				<key>runningsubtext</key>
-				<string>Fetching..</string>
+				<string>Loading..</string>
 				<key>script</key>
-				<string>python vagrantup.py --list {query}</string>
+				<string>/usr/bin/python vagrantup.py --list {query}</string>
 				<key>subtext</key>
 				<string>Show Vagrant global status</string>
 				<key>title</key>
-				<string>Vagrant Status</string>
+				<string>VagrantUP</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -140,93 +110,26 @@
 			<key>type</key>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</string>
+			<string>51FBDBDC-00D2-47AF-8220-033DF6DDE63C</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>python vagrantup.py --set {query}</string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>1EBEED43-CEE9-4FE9-B30A-50815F169532</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>python vagrantup.py --setenv {query}</string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>942FFFC4-1657-46C1-87F2-482BB48014DA</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>1</integer>
+				<key>concurrently</key>
+				<false/>
 				<key>escaping</key>
 				<integer>102</integer>
-				<key>keyword</key>
-				<string>:vagrant-id</string>
-				<key>queuedelaycustom</key>
-				<integer>1</integer>
-				<key>queuedelayimmediatelyinitially</key>
-				<false/>
-				<key>queuedelaymode</key>
-				<integer>0</integer>
-				<key>queuemode</key>
-				<integer>1</integer>
 				<key>script</key>
-				<string>python vagrantup.py --get {query}</string>
-				<key>subtext</key>
-				<string>Actions on Vagrant environment</string>
-				<key>title</key>
-				<string>Vagrant</string>
-				<key>type</key>
-				<integer>0</integer>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.scriptfilter</string>
-			<key>uid</key>
-			<string>28EE8EA4-6933-4E8E-8414-789A1E8B383C</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>python vagrantup.py --execute {query}</string>
+				<string>python vagrantup.py --env {query}</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.script</string>
+			<string>alfred.workflow.output.script</string>
 			<key>uid</key>
-			<string>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</string>
+			<string>E3FAB9B5-2CD6-4138-941D-2C0616C8D7F4</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -239,7 +142,7 @@
 			<key>type</key>
 			<string>alfred.workflow.trigger.external</string>
 			<key>uid</key>
-			<string>7B0FCBA8-328C-47D0-93FE-724007AE7921</string>
+			<string>A61FF101-9C27-41CB-88B3-BDDCF17EEFC5</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -259,53 +162,12 @@
 				<key>text</key>
 				<string>{query}</string>
 				<key>title</key>
-				<string>Vagrant</string>
+				<string>VagrantUP</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.notification</string>
 			<key>uid</key>
-			<string>CE905952-EA9C-4579-AB7C-C832499CC41C</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>open_dir</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>92AC2EFA-9E2B-428F-B522-CE49090797B0</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>script</key>
-				<string>clear; cd {query}</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.terminalcommand</string>
-			<key>uid</key>
-			<string>562C71D1-0EE3-40C1-85EC-A95459D0E542</string>
-			<key>version</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>triggerid</key>
-				<string>run_vagrant</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.external</string>
-			<key>uid</key>
-			<string>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</string>
+			<string>BBFC6352-C982-4965-978B-CE120119E021</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -320,7 +182,20 @@
 			<key>type</key>
 			<string>alfred.workflow.action.terminalcommand</string>
 			<key>uid</key>
-			<string>23A94193-5343-4AAE-8D69-16D55991EA8B</string>
+			<string>2CB3B3C6-06C2-45BD-9010-D5A83EC4440B</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>triggerid</key>
+				<string>run_vagrant</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.external</string>
+			<key>uid</key>
+			<string>A7439BA6-7126-4350-9302-E969C163AA89</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -329,65 +204,40 @@
 	<string></string>
 	<key>uidata</key>
 	<dict>
-		<key>1EBEED43-CEE9-4FE9-B30A-50815F169532</key>
-		<dict>
-			<key>ypos</key>
-			<real>140</real>
-		</dict>
-		<key>23A94193-5343-4AAE-8D69-16D55991EA8B</key>
-		<dict>
-			<key>ypos</key>
-			<real>750</real>
-		</dict>
-		<key>28EE8EA4-6933-4E8E-8414-789A1E8B383C</key>
-		<dict>
-			<key>ypos</key>
-			<real>390</real>
-		</dict>
-		<key>3CCCA1DC-DCA0-434E-A2A5-0192FD8BAF5F</key>
+		<key>0C730F61-1CAC-4DE8-80D3-334F826497C8</key>
 		<dict>
 			<key>ypos</key>
 			<real>20</real>
 		</dict>
-		<key>562C71D1-0EE3-40C1-85EC-A95459D0E542</key>
+		<key>2CB3B3C6-06C2-45BD-9010-D5A83EC4440B</key>
 		<dict>
 			<key>ypos</key>
-			<real>630</real>
+			<real>480</real>
 		</dict>
-		<key>6A576EC9-C05B-4B59-A06B-FED9AB81B79D</key>
+		<key>51FBDBDC-00D2-47AF-8220-033DF6DDE63C</key>
 		<dict>
 			<key>ypos</key>
-			<real>750</real>
+			<real>130</real>
 		</dict>
-		<key>73AF0E8F-CD7C-4CC2-949E-DB46241FCC0D</key>
+		<key>A61FF101-9C27-41CB-88B3-BDDCF17EEFC5</key>
 		<dict>
 			<key>ypos</key>
-			<real>140</real>
+			<real>360</real>
 		</dict>
-		<key>7B0FCBA8-328C-47D0-93FE-724007AE7921</key>
+		<key>A7439BA6-7126-4350-9302-E969C163AA89</key>
 		<dict>
 			<key>ypos</key>
-			<real>510</real>
+			<real>480</real>
 		</dict>
-		<key>92AC2EFA-9E2B-428F-B522-CE49090797B0</key>
+		<key>BBFC6352-C982-4965-978B-CE120119E021</key>
 		<dict>
 			<key>ypos</key>
-			<real>630</real>
+			<real>360</real>
 		</dict>
-		<key>942FFFC4-1657-46C1-87F2-482BB48014DA</key>
+		<key>E3FAB9B5-2CD6-4138-941D-2C0616C8D7F4</key>
 		<dict>
 			<key>ypos</key>
-			<real>260</real>
-		</dict>
-		<key>CE905952-EA9C-4579-AB7C-C832499CC41C</key>
-		<dict>
-			<key>ypos</key>
-			<real>510</real>
-		</dict>
-		<key>E46A28B6-A66F-404B-8C3A-C4C9A63B91D0</key>
-		<dict>
-			<key>ypos</key>
-			<real>390</real>
+			<real>180</real>
 		</dict>
 	</dict>
 	<key>webaddress</key>

@@ -3,3 +3,4 @@
 *.iml
 .tox/
 .coverage
+.DS_Store
