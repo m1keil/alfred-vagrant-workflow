@@ -5,9 +5,14 @@ A workflow for [Alfred2](http://www.alfredapp.com) which provides quick control 
 
 ## Functionality
 * List existing Vagrant environments
-* Filter environments by name, provider, path
-* Execute actions on specific VM or whole environment
-* Open terminal in environment path
+* Filter environments by name, path or id
+* Execute actions on specific machines or the whole environment
+
+## Screenshots:
+![Screenshot](screenshots/demo.gif?raw=true "Vagrant global-status")
+![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
+![Screenshot](screenshots/machine-actions.jpg?raw=true "Vagrant actions")
+![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
 
 ## Downloads & Install
 You can download this workflow from [Packal](http://www.packal.org/workflow/vagrantup) or directly from [GitHub](https://github.com/m1keil/alfred-vagrant-workflow/releases).
@@ -19,35 +24,40 @@ To install workflow, simply double click the file you just downloaded. For addit
 To list all existing Vagrant environments, use keyword `vagrant`.
 
 #### Filtering list
-You can filter the list by machine name, provider name or path. 
-Filtering is done with [fuzzy search](http://en.wikipedia.org/wiki/Approximate_string_matching). Enter your filter string after `vagrant` keyword to filter the list.
-
-**Examples:**
- - `vagrant virtualbox` - Will show only machines running under Virtualbox provider
- - `vagrant default` - Will match any machines named `default` or any machines that `default` is part of their Vagrantfile path.
+You can filter the list by machine name, it's environment path or id.
+Filtering is done with [fuzzy search](http://en.wikipedia.org/wiki/Approximate_string_matching).
 
 #### Executing actions
-To execute Vagrant commands directly from Alfred just choose the machine and press Enter. You will get a list of possible actions for the chosen machine.
+To execute Vagrant commands directly from Alfred just choose the machine and press Enter (or Tab). You will get a list of possible actions for the chosen machine.
 
 Actions will vary depending on the state of the machine. For example, if machine is stopped, you cannot run provision.
 
-It also possible to run commands on [multi machine Vagrantfile](https://docs.vagrantup.com/v2/multi-machine/index.html). Just choose one VM from the environment and press enter while holding the Command key.
+It also possible to run commands on [multi machine Vagrantfile](https://docs.vagrantup.com/v2/multi-machine/index.html). Choose any action and hold the Command key while pressing enter.
 
-**NOTE:** RDP & SSH actions will open Alfred's default terminal app which is configured in Alfred's setting. 
+**NOTE:** RDP & SSH actions will use Alfred's default terminal app which is configured in Alfred's setting.
 
-#### Open terminal in Vagrantfile's directory
-Choose machine from the list and press Enter while holding Shift key. 
+#### Settings
+Because environment variables are not propagated into OS X applications, the workflow comes with its own defaults.
+More specificlly:
 
-**NOTE:** This will open Alfred's default terminal app which is configured in Alfred's setting. 
+- Vagrant Index: the file where Vagrant stores it's internal state. (`~/.vagrant.d/data/machine-index/index`)
+- PATH: the PATH variable specifies a set of directories where executable programs are located. It is where `vagrant` or `VBoxManage` executables are expected to be found. (`/usr/bin:/usr/local/bin`)
 
-## Screenshots:
-![Screenshot](screenshots/demo.gif?raw=true "Vagrant global-status")
-![Screenshot](screenshots/global-status.jpg?raw=true "Vagrant global-status")
-![Screenshot](screenshots/machine-actions.jpg?raw=true "Vagrant actions")
-![Screenshot](screenshots/notifications.jpg?raw=true "Notifications")
+If your setup is different, you can adjust these settings in the config file.
+To open the config file - open Alfred and type `vagrant workflow:settings`. System's default `json` text editor should open up immediately afterwards.
 
-## How does it work?
-Since Vagrant 1.6 it's possible to list all Vagrant running environments via `global-status` subcommand.
-This workflow utilize this command to get a list of current Vagrant environments.
+In case you wish to reset setting to default type `vagrant workflow:delsettings`.
 
-**Note:** ~~Currently the implementation of `global-status` is still a bit buggy (machine status isn't being updated in some cases).~~ Vagrant 1.7 seems to fix a lot of issues related to global status.
+## Requirements
+1. Python 2.7 (Installed in OS X by default since 10.7)
+2. Alfred 2
+3. Vagrant (Preferebly 1.7+)
+
+## Troubleshooting
+In case something isn't right, check the logs by typing `vagrant workflow:openlog`.
+I assume most of the issues will occur due to path variables.
+
+Feel free to submit bug reports in the issue tracker.
+
+## Special Thanks
+Special thanks to **Deanishe** and his awesome [alfred-workflow](http://www.deanishe.net/alfred-workflow/index.html) library which does most of the heavy lifting here.
