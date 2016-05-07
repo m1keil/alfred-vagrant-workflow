@@ -64,9 +64,9 @@
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
-				<integer>102</integer>
+				<integer>118</integer>
 				<key>script</key>
-				<string>python vagrantup.py --execute {query}</string>
+				<string>python vagrantup.py --machine {query}</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
@@ -83,7 +83,7 @@
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
-				<integer>102</integer>
+				<integer>118</integer>
 				<key>keyword</key>
 				<string>vagrant</string>
 				<key>queuedelaycustom</key>
@@ -99,7 +99,7 @@
 				<key>script</key>
 				<string>/usr/bin/python vagrantup.py --list {query}</string>
 				<key>subtext</key>
-				<string>Show Vagrant global status</string>
+				<string>Show Vagrant environments</string>
 				<key>title</key>
 				<string>VagrantUP</string>
 				<key>type</key>
@@ -120,7 +120,7 @@
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
-				<integer>102</integer>
+				<integer>118</integer>
 				<key>script</key>
 				<string>python vagrantup.py --env {query}</string>
 				<key>type</key>

@@ -2,85 +2,141 @@
 # coding=utf-8
 from __future__ import unicode_literals
 
-import os
 import sys
 from argparse import ArgumentParser
 
 from vagrant import VagrantIndex
-from properties import modifiers
+from properties import modifiers, path
+from commons import opensettings
 from workflow import Workflow, ICON_WARNING
 
 
 logger = None
 SEP = '►'
-# TODO: make this configurable
-VAGRANT_HOME = os.path.expanduser('~/.vagrant.d')
-VAGRANT_INDEX = os.path.join(VAGRANT_HOME, 'data', 'machine-index', 'index')
+
+WORKFLOW_URL = 'https://github.com/m1keil/alfred-vagrant-workflow'
 
 
-def show_dummy(machine_id, action, wf):
-    wf.add_item(title='Confirm',
-                subtitle='You will loose all the data on the machine',
+def add_warning(wf, machine_id, action):
+    """
+    Add warning item to Workflow object.
+
+    Args:
+        wf (Workflow): Workflow object.
+        machine_id (unicode): Vagrant's machine ID.
+        action (unicode): Vagrant's action.
+    """
+    wf.add_item(title='Are you sure?',
+                subtitle='This action is not recoverable',
                 modifier_subtitles=modifiers,
-                arg='{action} {id}'.format(id=machine_id, action=action),
+                arg='{action} {mid}'.format(mid=machine_id, action=action),
                 icon=ICON_WARNING,
                 valid=True)
 
 
-def show_machines(query, wf):
-    with open(VAGRANT_INDEX) as fh:
+def add_machines(wf, query=None):
+    """
+    Add machine items to Workflow object. If query provided, filter out items
+    by fuzzy searching with the query string.
+
+    Args:
+        wf (Workflow): Workflow object.
+        query (optional[unicode]): Fuzzy search query.
+    """
+    with open(wf.settings['PATH']['INDEX']) as fh:
         vi = VagrantIndex(fh)
 
     for machine_id, machine in vi(query):
+        autocomplete = '{mid} {sep} '.format(mid=machine_id[0:8], sep=SEP)
         wf.add_item(title=machine.name,
                     subtitle=machine.vagrantfile_path,
-                    autocomplete=machine_id[0:8] + ' ' + SEP + ' ',
+                    autocomplete=autocomplete,
                     icon=machine.icon,
                     valid=False)
 
 
-def show_actions(machine_id, query, wf):
-    with open(VAGRANT_INDEX) as fh:
+def add_actions(wf, machine_id, query=None):
+    """
+    Add action items to Workflow object. If query is provided, filter out
+    items by fuzzy searching with the query string.
+
+    Args:
+        wf (Workflow): Workflow object.
+        machine_id (unicode): Vagrant's machine ID.
+        query (optional[unicode]): Fuzzy search query.
+    """
+    with open(wf.settings['PATH']['INDEX']) as fh:
         vi = VagrantIndex(fh)
 
     machine = vi[machine_id]
     for action in machine(query):
+        autocomplete = '{mid} {sep} {action}'.format(mid=machine_id,
+                                                     sep=SEP,
+                                                     action=action.name)
         if action.confirm:
-            autocomplete = machine_id + ' ' + SEP + ' ' + action.name + ' ' + SEP + ' '
-        else:
-            autocomplete = machine_id + ' ' + SEP + ' ' + action.name
+            autocomplete += ' {sep} '.format(sep=SEP)
 
         wf.add_item(title=action.name,
                     subtitle=action.description,
                     modifier_subtitles=modifiers,
                     autocomplete=autocomplete,
-                    arg='{action} {id}'.format(id=machine_id, action=action.name),
+                    arg='{action} {mid}'.format(mid=machine_id,
+                                                action=action.name),
                     icon=action.icon,
-                    valid=(not action.confirm))
+                    valid=not action.confirm)
 
 
-def do_list(args, wf):
-    query = ' '.join(args).strip() if len(args) is not 0 else ''
-    count = query.count(SEP)
+def do_list(wf, args):
+    """
+    Depanding on the arguments, will run the appropriate functions to add
+    machine, action or warning item(s) to Workflow object.
+
+    Args:
+        wf (Workflow): Workflow object.
+        args (list): List of arguments.
+    """
+    def _safe_get(l, i):
+        try:
+            return l[i]
+        except IndexError:
+            return None
+
+    count = args.count(SEP)
     if count == 0:
-        show_machines(query, wf)
+        add_machines(wf, _safe_get(args, 0))
     elif count == 1:
-        show_actions(query.split(SEP)[0].strip(), query.split(SEP)[1].strip(), wf)
+        add_actions(wf, args[0], _safe_get(args, 2))
     else:
-        show_dummy(query.split(SEP)[0].strip(), query.split(SEP)[1].strip(), wf)
+        add_warning(wf, args[0], _safe_get(args, 4))
 
 
-def do_execute(args, env=False):
+def do_execute(wf, args, env=False):
+    """
+    Executes Vagrant's commands. If env is True, execute command on the entire
+    Vagrant environemnt.
+
+    Args:
+        wf (Workflow): Workflow object.
+        args (list): A list in the form of [action, machine_id].
+        env (bool): If True, execute comman on the entire environment. Else
+                    execute only on the machine.
+    """
     action, machine_id = args
-    with open(VAGRANT_INDEX) as fh:
+    with open(wf.settings['PATH']['INDEX']) as fh:
         vi = VagrantIndex(fh)
     machine = vi[machine_id]
     machine.run(action, env)
 
 
-def get_parser():
+def parse_args(args):
     """
-    Parse command line argument and return parser object
+    Parse command line argument and return parsed Namespace object.
+
+    Args:
+        args (list): List of arguments.
+
+    Returns:
+        argparse.Namespace: Parsed arguments Namespace object.
     """
     parser = ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
@@ -89,35 +145,39 @@ def get_parser():
                        metavar='QUERY',
                        help='List Vagrant machines and actions. '
                             'If %(metavar)s is provided, will filter results '
-                            'by fuzzy searching')
-    group.add_argument('--execute',
+                            'by fuzzy searching.')
+    group.add_argument('--machine',
                        nargs=2,
                        metavar=('COMMAND', 'ID'),
-                       help='Execute command on specific VM in the background')
+                       help='Execute command on specific machine.')
     group.add_argument('--env',
                        nargs=2,
                        metavar=('COMMAND', 'ID'),
-                       help='Execute command on entire environment in the background')
-    return parser
+                       help='Execute command on entire environment.')
+
+    return parser.parse_args(args)
 
 
 def main(wf):
     """
-    Main program entry point
+    Main program entry point.
+
+    Args:
+        wf (Workflow): Workflow object.
     """
-    parser = get_parser()
-    args = parser.parse_args(wf.args)
-
-    if args.list is not None:
-        do_list(args.list, wf)
-    elif args.execute:
-        do_execute(args.execute)
+    args = parse_args(wf.args)
+    if args.machine:
+        do_execute(wf, args.machine)
     elif args.env:
-        do_execute(args.env, env=True)
-
+        do_execute(wf, args.env, env=True)
+    else:
+        do_list(wf, args.list)
     wf.send_feedback()
 
 if __name__ == '__main__':
-    workflow = Workflow()
-    logger = workflow.logger
-    sys.exit(workflow.run(main))
+    wf = Workflow(help_url=WORKFLOW_URL, default_settings={'PATH': path})
+
+    wf.magic_arguments['settings'] = lambda: opensettings(wf.settings_path)
+
+    logger = wf.logger
+    sys.exit(wf.run(main))

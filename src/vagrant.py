@@ -7,7 +7,6 @@ from properties import actions, states
 from workflow import Workflow
 from workflow.background import run_in_background
 
-VAGRANTBIN = '/usr/local/bin/vagrant'
 ICONS_STATES_PATH = os.path.join(Workflow().workflowdir, 'icons', 'states')
 ICONS_ACTION_PATH = os.path.join(Workflow().workflowdir, 'icons', 'actions')
 
@@ -15,6 +14,9 @@ logger = Workflow().logger
 
 
 class VagrantMachine:
+    """
+
+    """
     @staticmethod
     def normalize_state(state):
         for states_tup, output in states.iteritems():
@@ -24,18 +26,21 @@ class VagrantMachine:
         raise Exception('Unable to normalize state: {}'.format(state))
 
     def __init__(self, **kwargs):
-        for attr in ('key', 'name', 'provider', 'state', 'vagrantfile_path'):
-            self.__dict__[attr] = kwargs.get(attr)
+        self.key = kwargs['key']
+        self.name = kwargs['name']
+        self.provider = kwargs['provider']
+        self.state = kwargs['state']
+        self.vagrantfile_path = kwargs['vagrantfile_path']
         self.normalized_state = self.normalize_state(self.state)
         self.icon = self._get_icon()
         self.actions = self._get_actions()
 
     def _get_actions(self):
-        out = []
-        for action, props in actions.iteritems():
-            if self.normalize_state(self.state) in props['state']:
-                out.append(VagrantAction(action))
-        return out
+        def f(state):
+            return self.normalized_state in state
+
+        return [VagrantAction(action) for action, props in actions.iteritems()
+                if f(props['state'])]
 
     def _get_icon(self):
         icon = os.path.join(ICONS_STATES_PATH,
@@ -58,7 +63,8 @@ class VagrantMachine:
         task_name = 'exec{0}'.format(hash(self.vagrantfile_path))
 
         if action.name in ('rdp', 'ssh'):
-            run_vagrant('{action} {machine_id}'.format(action=action.name, machine_id=self.key))
+            run_vagrant('{action} {machine_id}'.format(action=action.name,
+                                                       machine_id=self.key))
             return
 
         cur_dir = os.path.dirname(os.path.realpath(__file__))
@@ -70,19 +76,24 @@ class VagrantMachine:
             cmd += ['--name', self.name]
 
         logger.debug('Running in background: ' + str(cmd))
-        # TODO: env variables should be configurable
         run_in_background(task_name,
                           cmd,
-                          env={'HOME': os.path.expanduser('~'), 'PATH': '/usr/bin:/usr/local/bin'},
+                          env={'HOME': os.path.expanduser('~'),
+                               'PATH': Workflow().settings['PATH']['VAR']},
                           cwd=self.vagrantfile_path)
 
     def __call__(self, query=None):
         if not query:
             return self.actions
-        return Workflow().filter(query=query, items=self.actions, key=lambda x: x.name)
+        return Workflow().filter(query=query,
+                                 items=self.actions,
+                                 key=lambda x: x.name)
 
 
 class VagrantAction:
+    """
+
+    """
     def __init__(self, action):
         if action not in actions:
             raise Exception('Unknown action type')
@@ -103,6 +114,9 @@ class VagrantAction:
 
 
 class VagrantIndex:
+    """
+
+    """
     @staticmethod
     def parse_v1_machines(mdict):
         return {key: VagrantMachine(key=key, **val) for key, val in mdict.iteritems()}
