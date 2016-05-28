@@ -13,18 +13,10 @@ ICONS_ACTION_PATH = os.path.join(Workflow().workflowdir, 'icons', 'actions')
 logger = Workflow().logger
 
 
-class VagrantMachine:
+class Machine:
     """
-
+    A Vagrant machine.
     """
-    @staticmethod
-    def normalize_state(state):
-        for states_tup, output in states.iteritems():
-            if state in states_tup:
-                return output
-
-        raise Exception('Unable to normalize state: {}'.format(state))
-
     def __init__(self, **kwargs):
         self.key = kwargs['key']
         self.name = kwargs['name']
@@ -32,17 +24,17 @@ class VagrantMachine:
         self.state = kwargs['state']
         self.vagrantfile_path = kwargs['vagrantfile_path']
         self.normalized_state = self.normalize_state(self.state)
-        self.icon = self._get_icon()
-        self.actions = self._get_actions()
 
-    def _get_actions(self):
+    @property
+    def actions(self):
         def f(state):
             return self.normalized_state in state
 
-        return [VagrantAction(action) for action, props in actions.iteritems()
+        return [Action(action) for action, props in actions.iteritems()
                 if f(props['state'])]
 
-    def _get_icon(self):
+    @property
+    def icon(self):
         icon = os.path.join(ICONS_STATES_PATH,
                             '{0}.{1}.png'.format(self.provider, self.normalized_state))
         default = os.path.join(ICONS_STATES_PATH,
@@ -55,8 +47,16 @@ class VagrantMachine:
         else:
             return None
 
+    @staticmethod
+    def normalize_state(state):
+        for states_tup, output in states.iteritems():
+            if state in states_tup:
+                return output
+
+        raise Exception('Unable to normalize state: {state}'.format(state=state))
+
     def run(self, action, env=False):
-        action = VagrantAction(action)
+        action = Action(action)
         if not filter(lambda x: x.name == action.name, self.actions):
             raise Exception("Action not found. Instance changed state?")
 
@@ -71,15 +71,17 @@ class VagrantMachine:
         cmd = ['python', os.path.join(cur_dir, 'execute.py'), '--action', action.name]
 
         if action.flags:
-            cmd += ['-f' + str(flag) for flag in action.flags]
+            cmd += ['-f {0}'.format(flag) for flag in action.flags]
         if not env:
             cmd += ['--name', self.name]
 
         logger.debug('Running in background: ' + str(cmd))
+        new_env = os.environ.copy()
+        new_env['HOME'] = os.path.expanduser('~')
+        new_env['PATH'] = Workflow().settings['PATH']['VAR']
         run_in_background(task_name,
                           cmd,
-                          env={'HOME': os.path.expanduser('~'),
-                               'PATH': Workflow().settings['PATH']['VAR']},
+                          env=new_env,
                           cwd=self.vagrantfile_path)
 
     def __call__(self, query=None):
@@ -90,9 +92,9 @@ class VagrantMachine:
                                  key=lambda x: x.name)
 
 
-class VagrantAction:
+class Action:
     """
-
+    A Vagrant machine action.
     """
     def __init__(self, action):
         if action not in actions:
@@ -103,9 +105,9 @@ class VagrantAction:
         self.flags = actions[action].get('flags', None)
         self.dir_action = actions[action].get('dir_action', True)
         self.confirm = actions[action].get('confirm', False)
-        self.icon = self._get_icon()
 
-    def _get_icon(self):
+    @property
+    def icon(self):
         icon = os.path.join(ICONS_ACTION_PATH, '{0}.png'.format(self.name))
         if os.path.isfile(icon):
             return icon
@@ -113,13 +115,13 @@ class VagrantAction:
             return None
 
 
-class VagrantIndex:
+class Index:
     """
-
+    A Vagrant Index.
     """
     @staticmethod
     def parse_v1_machines(mdict):
-        return {key: VagrantMachine(key=key, **val) for key, val in mdict.iteritems()}
+        return {key: Machine(key=key, **val) for key, val in mdict.iteritems()}
 
     def __init__(self, fh):
         content = json.load(fh)

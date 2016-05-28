@@ -5,10 +5,11 @@ from __future__ import unicode_literals
 import sys
 from argparse import ArgumentParser
 
-from vagrant import VagrantIndex
+from vagrant import Index
 from properties import modifiers, path
 from commons import opensettings
-from workflow import Workflow, ICON_WARNING
+from workflow import Workflow, ICON_WARNING, ICON_INFO
+from workflow.background import is_running
 
 
 logger = None
@@ -44,7 +45,7 @@ def add_machines(wf, query=None):
         query (optional[unicode]): Fuzzy search query.
     """
     with open(wf.settings['PATH']['INDEX']) as fh:
-        vi = VagrantIndex(fh)
+        vi = Index(fh)
 
     for machine_id, machine in vi(query):
         autocomplete = '{mid} {sep} '.format(mid=machine_id[0:8], sep=SEP)
@@ -66,24 +67,34 @@ def add_actions(wf, machine_id, query=None):
         query (optional[unicode]): Fuzzy search query.
     """
     with open(wf.settings['PATH']['INDEX']) as fh:
-        vi = VagrantIndex(fh)
+        vi = Index(fh)
 
     machine = vi[machine_id]
-    for action in machine(query):
-        autocomplete = '{mid} {sep} {action}'.format(mid=machine_id,
-                                                     sep=SEP,
-                                                     action=action.name)
-        if action.confirm:
-            autocomplete += ' {sep} '.format(sep=SEP)
+    task_name = 'exec{0}'.format(hash(machine.vagrantfile_path))
 
-        wf.add_item(title=action.name,
-                    subtitle=action.description,
-                    modifier_subtitles=modifiers,
-                    autocomplete=autocomplete,
-                    arg='{action} {mid}'.format(mid=machine_id,
-                                                action=action.name),
-                    icon=action.icon,
-                    valid=not action.confirm)
+    if is_running(task_name):
+        subtitle = 'A task already running on {env_path} environemnt' \
+                   ''.format(env_path=machine.vagrantfile_path)
+        wf.add_item(title='Please wait..',
+                    subtitle=subtitle,
+                    icon=ICON_INFO,
+                    valid=False)
+    else:
+        for action in machine(query):
+            autocomplete = '{mid} {sep} {action}'.format(mid=machine_id,
+                                                         sep=SEP,
+                                                         action=action.name)
+            if action.confirm:
+                autocomplete += ' {sep} '.format(sep=SEP)
+
+            wf.add_item(title=action.name,
+                        subtitle=action.description,
+                        modifier_subtitles=modifiers,
+                        autocomplete=autocomplete,
+                        arg='{action} {mid}'.format(mid=machine_id,
+                                                    action=action.name),
+                        icon=action.icon,
+                        valid=not action.confirm)
 
 
 def do_list(wf, args):
@@ -123,7 +134,7 @@ def do_execute(wf, args, env=False):
     """
     action, machine_id = args
     with open(wf.settings['PATH']['INDEX']) as fh:
-        vi = VagrantIndex(fh)
+        vi = Index(fh)
     machine = vi[machine_id]
     machine.run(action, env)
 
