@@ -39,8 +39,8 @@ It also possible to run commands on [multi machine Vagrantfile](https://docs.vag
 ## Settings
 Because environment variables are not propagated into OS X applications, the workflow comes with its own defaults:
 
-- *Vagrant Index*: the file where Vagrant stores it's internal state (`~/.vagrant.d/data/machine-index/index` by default)
-- *PATH*: the PATH variable specifies a set of directories where executable programs are located. It is where `vagrant` or `VBoxManage` executables are expected to be found (`/usr/bin:/usr/local/bin` by default)
+- **Vagrant Index**: the file where Vagrant stores it's internal state (`~/.vagrant.d/data/machine-index/index` by default)
+- **PATH**: the PATH variable specifies a set of directories where executable programs are located. It is where `vagrant` or `VBoxManage` executables are expected to be found (`/usr/bin:/usr/local/bin` by default)
 
 If your setup is different, you should adjust these settings in the config file.
 
