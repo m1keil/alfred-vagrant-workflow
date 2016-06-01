@@ -1,105 +1,62 @@
+import os
+from workflow import Workflow
 from subprocess import call
 
-# Dict contains all Vagrant actions this workflow supports and metadata:
-# ---
-# 'desc': description field showed in alfred
-# 'flags': additional command line flags for vagrant command
-# 'state': machine state for which this action needs to be showed
-# 'dir_action': flag to mark if action is possible on entire vagrant dir
-actions = {
-    'up': {
-        'desc': 'Starts and provisions the vagrant environment',
-        'flags': None,
-        'state': ['paused', 'stopped'],
-        'dir_action': True,
-    },
-    'halt': {
-        'desc': 'Stops the machine',
-        'flags': None,
-        'state': ['running', 'paused'],
-        'dir_action': True,
-    },
-    'resume': {
-        'desc': 'Resume a suspended machine',
-        'flags': None,
-        'state': ['paused'],
-        'dir_action': True,
-    },
-    'suspend': {
-        'desc': 'Suspends the machine',
-        'flags': None,
-        'state': ['running'],
-        'dir_action': True,
-    },
-    'provision': {
-        'desc': 'Provisions the machine',
-        'flags': None,
-        'state': ['running'],
-        'dir_action': True,
-    },
-    'rdp': {
-        'desc': 'Connects to machine via RDP',
-        'flags': None,
-        'state': ['running'],
-        'dir_action': False,
-    },
-    'ssh': {
-        'desc': 'Connects to machine via SSH',
-        'flags': None,
-        'state': ['running'],
-        'dir_action': False,
-    },
-    'destroy': {
-        'desc': 'Stops and deletes all traces of the machine',
-        'flags': '-f',
-        'state': ['running', 'paused', 'stopped'],
-        'dir_action': True,
-    }
-}
-
-# Normalization dictionary
-states = {
-    ('running', 'up', 'on'): 'running',
-    ('paused', 'suspended', 'saved'): 'paused',
-    ('stopped', 'poweroff', 'not running', 'down'): 'stopped',
-    'not created': 'missing',
-}
+logger = Workflow().logger
 
 
 def external_trigger(name, argument):
     """
-    Call to external trigger in Alfred
+    Call to external trigger in Alfred.
+
+    This utilize apple script functionality to trigger in Alfred.
+
+
+    Args:
+        name (str): Name of the trigger.
+        argument: Argument to the trigger.
+
+    Returns:
+        int: Return code from osascript exec
     """
-    call(['/usr/bin/osascript', '-e',
-          'tell application "Alfred 2" to run trigger "{0}" '
-          'in workflow "com.sverdlik.michael" '
-          'with argument "{1}"'.format(name, argument)])
+    major_version = int(float(os.environ['alfred_version']))
+
+    osascript = 'tell application "Alfred {version}" to run trigger ' \
+                '"{name}" in workflow "{uuid}" with argument "{arg}"' \
+        .format(version=major_version,
+                name=name,
+                uuid=os.environ['alfred_workflow_bundleid'],
+                arg=argument)
+
+    cmd = ['/usr/bin/osascript', '-e', osascript]
+    logger.debug('Sending notification: {0}'.format(cmd))
+    return call(cmd)
 
 
 def send_notification(msg):
     """
-    Trigger notification with msg as content
+    Trigger notification with msg as content.
+
+    Args:
+        msg (str): Notification message.
     """
     external_trigger('send_notification', msg)
 
 
-def open_terminal(path):
-    """
-    Trigger opening terminal and cd to path
-    """
-    external_trigger('open_dir', path)
-
-
 def run_vagrant(arg):
     """
-    Trigger running Vagrant in terminal
+    Trigger running Vagrant in terminal.
+
+    Args:
+        arg (str): Vagrant command line arguments in one string.
     """
     external_trigger('run_vagrant', arg)
 
 
-def run_alfred(action):
+def opensettings(workflow_settings):
     """
-    Launch Alfred 2 via AppleScript and search for 'action'
+    Open settings.json file with system's default editor
+    Args:
+        workflow_settings: settings.json file path
     """
-    call(['/usr/bin/osascript', '-e',
-          'tell application "Alfred 2" to search "{0}"'.format(action)])
+    call(['/usr/bin/open', workflow_settings])

@@ -1,48 +1,96 @@
-import sys
-import os
-from subprocess import Popen, PIPE
+from argparse import ArgumentParser
+from subprocess import Popen, PIPE, STDOUT
+
 from workflow import Workflow
-from commons import send_notification, run_vagrant
-
-logger = None
+from commons import send_notification
 
 
-def parse_argv(args):
-    return args[1], args[2].split(' ')
+def spawn_process(action, flags=None, machine_name=None):
+    """
+    Spaws subprocess.
 
+    Args:
+        action (str): Vagrant action.
+        flags (optional): An iterable of vagrant command flags.
+        machine_name (optional[str]): Vagrant machine name.
 
-def spawn_process(env_id, action):
-    vagrantfile_path = None
-    if os.path.isdir(env_id):
-        vagrantfile_path = env_id
-        command = ['vagrant'] + action
-    else:
-        command = ['vagrant'] + action + [env_id]
-    return Popen(command, cwd=vagrantfile_path, stdout=PIPE, stderr=PIPE)
+    Returns:
+        Popen: Popen instance
+    """
+    command = ['vagrant', action]
+
+    if flags:
+        command += ['-{0}'.format(flag) for flag in flags]
+
+    if machine_name:
+        command.append(machine_name)
+
+    logger.debug('Calling: %s', command)
+    return Popen(command, stdout=PIPE, stderr=STDOUT)
 
 
 def parse_process_output(process):
-    stdout, stderr = process.communicate()
-    return_code = process.poll()
-    logger.debug('exec output:\nstdout: {0}\nstderr{1}'.format(stdout, stderr))
-    if return_code:
-        message = 'failed'
-    else:
-        message = 'finished succesfully'
-    return message
+    """
+    Logs subprocess's stdout.
+
+    Args:
+        process (Popen): the process the log output from.
+    """
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+        logger.debug(line.strip())
+
+
+def parse_arguments():
+    """
+    Parse command line argument and return argparse.Namespace object.
+
+    Returns:
+        argparse.Namespace: Parsed arguments Namespace object.
+    """
+
+    description = """
+    This will run Vagrant executable.
+    Works under the assumption that the PATH & HOME variables are set
+    correctly and that CWD is relevant Vagrant environmnet directory.
+    """
+
+    parser = ArgumentParser(description=description)
+
+    parser.add_argument('-a', '--action',
+                        required=True,
+                        help='Vagrant action to execute')
+
+    parser.add_argument('-f', '--flags',
+                        nargs='?',
+                        action='append',
+                        default=[],
+                        help='Vagrant command flags')
+
+    parser.add_argument('-n', '--name', help='Vagrant machine name')
+
+    return parser.parse_args()
 
 
 def main():
-    env_id, action = parse_argv(sys.argv)
+    """
+    Main program entry point. Parse command line, execute subprocess and
+    send notification at the end.
+    """
+    args = parse_arguments()
 
-    if action[0] in ('ssh', 'rdp'):
-        run_vagrant('{0} {1}'.format(action[0], env_id))
-        return
-    else:
-        process = spawn_process(env_id, action)
+    process = spawn_process(action=args.action,
+                            flags=args.flags,
+                            machine_name=args.name)
+    parse_process_output(process)
 
-    message = parse_process_output(process)
-    send_notification('{0} {1}'.format(action[0], message))
+    return_code = process.wait()
+    logger.debug('Return code: %s', return_code)
+    message = 'finished succesfully' if return_code == 0 else 'failed'
+
+    send_notification('{0} {1}'.format(args.action, message))
 
 
 if __name__ == '__main__':
