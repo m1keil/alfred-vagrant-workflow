@@ -4,30 +4,28 @@ from subprocess import Popen, PIPE, STDOUT
 from workflow import Workflow
 from commons import send_notification
 
-logger = None
-
 
 def spawn_process(action, flags=None, machine_name=None):
     """
     Spaws subprocess.
 
     Args:
-        action: Vagrant action.
-        flags (optional[list]): List of additional command flags.
+        action (str): Vagrant action.
+        flags (optional): An iterable of vagrant command flags.
         machine_name (optional[str]): Vagrant machine name.
 
     Returns:
-        Popen: Reference to subprocess
+        Popen: Popen instance
     """
     command = ['vagrant', action]
 
     if flags:
-        command += ['-' + str(flag) for flag in flags]
+        command += ['-{0}'.format(flag) for flag in flags]
 
     if machine_name:
         command.append(machine_name)
 
-    logger.debug('Calling ' + str(command))
+    logger.debug('Calling: %s', command)
     return Popen(command, stdout=PIPE, stderr=STDOUT)
 
 
@@ -89,7 +87,7 @@ def main():
     parse_process_output(process)
 
     return_code = process.wait()
-    logger.debug('Return code: ' + str(return_code))
+    logger.debug('Return code: %s', return_code)
     message = 'finished succesfully' if return_code == 0 else 'failed'
 
     send_notification('{0} {1}'.format(args.action, message))

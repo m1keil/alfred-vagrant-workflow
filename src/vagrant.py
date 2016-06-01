@@ -35,10 +35,10 @@ class Machine:
 
     @property
     def icon(self):
-        icon = os.path.join(ICONS_STATES_PATH,
-                            '{0}.{1}.png'.format(self.provider, self.normalized_state))
-        default = os.path.join(ICONS_STATES_PATH,
-                               'vagrant.{0}.png'.format(self.normalized_state))
+        icon = os.path.join(ICONS_STATES_PATH, '{0}.{1}.png'
+                            .format(self.provider, self.normalized_state))
+        default = os.path.join(ICONS_STATES_PATH, 'vagrant.{0}.png'
+                               .format(self.normalized_state))
 
         if os.path.isfile(icon):
             return icon
@@ -53,29 +53,31 @@ class Machine:
             if state in states_tup:
                 return output
 
-        raise Exception('Unable to normalize state: {state}'.format(state=state))
+        raise ValueError('Unable to normalize state: {0}'.format(state))
 
     def run(self, action, env=False):
         action = Action(action)
         if not filter(lambda x: x.name == action.name, self.actions):
-            raise Exception("Action not found. Instance changed state?")
+            raise Exception('Action {0} not found. Instance changed state?'
+                            .format(action))
 
         task_name = 'exec{0}'.format(hash(self.vagrantfile_path))
 
         if action.name in ('rdp', 'ssh'):
-            run_vagrant('{action} {machine_id}'.format(action=action.name,
-                                                       machine_id=self.key))
+            run_vagrant('{action} {machine_id}'
+                        .format(action=action.name, machine_id=self.key))
             return
 
         cur_dir = os.path.dirname(os.path.realpath(__file__))
-        cmd = ['python', os.path.join(cur_dir, 'execute.py'), '--action', action.name]
+        exec_path = os.path.join(cur_dir, 'execute.py')
+        cmd = ['python', exec_path, '--action', action.name]
 
         if action.flags:
             cmd += ['-f {0}'.format(flag) for flag in action.flags]
         if not env:
             cmd += ['--name', self.name]
+        logger.debug('Running in background: %s', cmd)
 
-        logger.debug('Running in background: ' + str(cmd))
         new_env = os.environ.copy()
         new_env['HOME'] = os.path.expanduser('~')
         new_env['PATH'] = Workflow().settings['PATH']['VAR']
@@ -129,10 +131,11 @@ class Index:
         self.version = content['version']
         if self.version == 1:
             self.machines = self.parse_v1_machines(content['machines'])
-            # TODO: this is just a hack
+            # TODO: naive assumption that length of 8 is enough
             self.test = {key[0:8]: key for key in self.machines.iterkeys()}
         else:
-            raise Exception('Vagrant index version {0} is not supported'.format(self.version))
+            raise ValueError('Vagrant index version {0} is not supported'
+                             .format(self.version))
 
     def __iter__(self):
         return self.machines.iteritems()
@@ -140,9 +143,13 @@ class Index:
     def __call__(self, query=None):
         if not query:
             return self.__iter__()
+
+        def key(x):
+            return x[1].name + x[1].vagrantfile_path + x[1].key
+
         return Workflow().filter(query=query,
                                  items=self.__iter__(),
-                                 key=lambda x: x[1].name + x[1].vagrantfile_path + x[1].key)
+                                 key=key)
 
     def __getitem__(self, machine_id):
         if machine_id in self.machines:
@@ -150,4 +157,4 @@ class Index:
         elif machine_id in self.test:
             return self.machines[self.test[machine_id]]
         else:
-            raise Exception("Machine not found")
+            raise ValueError('Machine {0} not found'.format(machine_id))

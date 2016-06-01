@@ -9,28 +9,28 @@ def external_trigger(name, argument):
     """
     Call to external trigger in Alfred.
 
+    This utilize apple script functionality to trigger in Alfred.
+
+
     Args:
         name (str): Name of the trigger.
         argument: Argument to the trigger.
-    """
-    if 'alfred_version' not in os.environ:
-        logger.debug('"alfred_version" env var not found. Exiting')
-        return
 
-    major_version = os.environ['alfred_version'].split('.')[0]
-    logger.debug('Alfred major version: {0}'.format(major_version))
-    osascript = 'tell application "Alfred {version}" to run trigger "{name}" ' \
-                'in workflow "{uuid}" with argument "{arg}"' \
+    Returns:
+        int: Return code from osascript exec
+    """
+    major_version = int(float(os.environ['alfred_version']))
+
+    osascript = 'tell application "Alfred {version}" to run trigger ' \
+                '"{name}" in workflow "{uuid}" with argument "{arg}"' \
         .format(version=major_version,
                 name=name,
                 uuid=os.environ['alfred_workflow_bundleid'],
                 arg=argument)
 
-    try:
-        call(['/usr/bin/osascript', '-e', osascript])
-    except OSError as e:
-        logger.error('Calling osascript failed: {code} {message}'
-                     .format(code=e.errno, message=e.message))
+    cmd = ['/usr/bin/osascript', '-e', osascript]
+    logger.debug('Sending notification: {0}'.format(cmd))
+    return call(cmd)
 
 
 def send_notification(msg):
