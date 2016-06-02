@@ -62,5 +62,5 @@ modifiers = {
 # - PATH contains the PATH variable which will be set at subprocess call
 path = {
     'INDEX': os.path.expanduser('~/.vagrant.d/data/machine-index/index'),
-    'VAR': '/usr/bin:/usr/local/bin'
+    'VAR': '/usr/bin:/usr/local/bin:/sbin'
 }

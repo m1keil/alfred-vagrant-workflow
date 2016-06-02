@@ -19,7 +19,7 @@ def external_trigger(name, argument):
     Returns:
         int: Return code from osascript exec
     """
-    major_version = int(float(os.environ['alfred_version']))
+    major_version = os.environ['alfred_version'].split('.')[0]
 
     osascript = 'tell application "Alfred {version}" to run trigger ' \
                 '"{name}" in workflow "{uuid}" with argument "{arg}"' \
