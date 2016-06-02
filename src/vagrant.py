@@ -53,7 +53,7 @@ class Machine:
             if state in states_tup:
                 return output
 
-        raise ValueError('Unable to normalize state: {0}'.format(state))
+        return 'unexpected'
 
     def run(self, action, env=False):
         action = Action(action)

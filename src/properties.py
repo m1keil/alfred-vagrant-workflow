@@ -9,7 +9,7 @@ import os
 actions = {
     'up': {
         'desc': 'Starts and provisions the vagrant environment',
-        'state': ['paused', 'stopped'],
+        'state': ['paused', 'stopped', 'unexpected'],
     },
     'halt': {
         'desc': 'Stops the machine',
@@ -38,7 +38,7 @@ actions = {
     'destroy': {
         'desc': 'Stops and deletes all traces of the machine',
         'flags': ['f'],
-        'state': ['running', 'paused', 'stopped'],
+        'state': ['running', 'paused', 'stopped', 'unexpected'],
         'confirm': True,
     }
 }
