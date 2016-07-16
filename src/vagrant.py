@@ -73,7 +73,7 @@ class Machine:
         cmd = ['python', exec_path, '--action', action.name]
 
         if action.flags:
-            cmd += ['-f {0}'.format(flag) for flag in action.flags]
+            cmd += ['-f'] + action.flags
         if not env:
             cmd += ['--name', self.name]
         logger.debug('Running in background: %s', cmd)
@@ -100,7 +100,7 @@ class Action:
     """
     def __init__(self, action):
         if action not in actions:
-            raise Exception('Unknown action type')
+            raise Exception('Unknown action type %s' % action)
 
         self.name = action
         self.description = actions[action].get('desc', '')

@@ -118,7 +118,7 @@ def do_list(wf, args):
     elif count == 1:
         add_actions(wf, args[0], _safe_get(args, 2))
     else:
-        add_warning(wf, args[0], _safe_get(args, 4))
+        add_warning(wf, args[0], _safe_get(args, 2))
 
 
 def do_execute(wf, args, env=False):
