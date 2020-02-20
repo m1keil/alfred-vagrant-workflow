@@ -1,3 +1,7 @@
+
+**I'm not an active Vagrant user and no longer maintaining this project.**
+
+
 # VagrantUP
 [![Build Status](https://travis-ci.org/m1keil/alfred-vagrant-workflow.svg?branch=master)](https://travis-ci.org/m1keil/alfred-vagrant-workflow) [![Coverage Status](https://coveralls.io/repos/m1keil/alfred-vagrant-workflow/badge.svg)](https://coveralls.io/r/m1keil/alfred-vagrant-workflow)
 
